@@ -1,7 +1,8 @@
+# import knihoven
 import pandas as pd
 import numpy as np
-
-
+from uncertainties import ufloat as uf
+from scipy import scipy.optimize
 
 
 # nacteni google tabulek
