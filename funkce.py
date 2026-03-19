@@ -3,61 +3,67 @@ import pandas as pd
 import numpy as np
 from uncertainties import ufloat as uf
 from scipy.optimize import curve_fit
+from scipy import stats
 
 
 # nacteni google tabulek
 sheet_id = "SPREADSHEET_ID"
 gid = "0"
-
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 
 df = pd.read_csv(url)
 
 
 # nejistota typu A 
-def uncertainty_typeA(data):
+def unc_A(data):
     """
-    Výpočet nejistoty typu A (standard uncertainty of the mean)
-
+    Výpočet nejistoty typu A
     data : list nebo numpy array
-        opakovaná měření
-
+         měření
     return : float
         nejistota typu A
     """
-    
     data = np.array(data)
     n = len(data)
-    
-    if n < 2:
-        raise ValueError("Je potřeba alespoň 2 měření")
 
-    s = np.std(data, ddof=1)  # výběrová směrodatná odchylka
+    s = np.std(data, ddof=1)
     u_A = s / np.sqrt(n)
     
     return u_A
 
 
 
-# nejistota typu B pro digitalni pristroje
-def uncertainty_typeB_digital(reading, percent_reading, digits, resolution):
+# nejistoty typu B pro digitalni pristroje
+def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi byt ve spravnych jednotkach; funguje pouze pro jedny podminky zaroven
     """
-    Výpočet standardní nejistoty typu B pro digitální měření.
+    Vypocet nejistoty typu B pro digitalni mereni (ponechame krajni)
 
     reading : float nebo array
-        naměřená hodnota
+        namerena hodnota
     percent_reading : float
-        procentní přesnost (% of reading)
+        % of reading
     digits : float
-        počet digitů ve specifikaci
+        pocet digitu
     resolution : float
-        hodnota jednoho digit (např. 0.01)
-
-    return : float nebo numpy array
-        standardní nejistota typu B
+        nejmensi dilek
     """
 
-    max_error = abs(reading) * percent_reading / 100 + digits * resolution
-    u_B = max_error / np.sqrt(3)
+    max_error = abs(reading) * (percent_reading/100) + digits * resolution  # max_error -- krajni nejistota
+    u_B = max_error
 
     return u_B
+
+
+# funkce na Studentuv koeficient
+def StudCoef(confidence, dof): 
+    """
+    Parametry
+    confidence : float
+        hladina spolehlivosti, typicke hodnoty 0.683, 0.9973;
+    dof : 
+        pocet stupnu volnosti, pro jednoduchou statistiku array.size-1
+    Returns : float
+    Studentuv koeficient pro danou hladinu spolehlivosti a pocet stupnu volnosti
+    """
+    alpha = 1 - confidence
+    return stats.t.ppf(1 - alpha/2, dof) 

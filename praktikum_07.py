@@ -8,17 +8,15 @@ from scipy.optimize import curve_fit
 # nacteni google tabulek
 sheet_id = "1GyY4H-OTBL_kVIBzqRwe_UpJX8blSdwkcHyNo-NSDso"
 gid = "0"
-
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 
 df_tlaky = pd.read_csv(url)
 
 
 # nejistota typu A 
-def uncertainty_typeA(data):
+def unc_A(data):
     """
     Výpočet nejistoty typu A
-
     data : list nebo numpy array
         opakovaná měření
     return : float
@@ -32,4 +30,4 @@ def uncertainty_typeA(data):
     
     return u_A
 
-A = uf(data, uncertainty_typeA(data)
+#A = uf(data, unc_A(data))
