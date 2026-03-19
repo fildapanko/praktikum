@@ -4,7 +4,7 @@ import numpy as np
 from uncertainties import ufloat as uf
 from scipy.optimize import curve_fit
 from scipy import stats
-
+from uncertainties import unumpy as unp
 
 # nacteni google tabulek
 sheet_id = "SPREADSHEET_ID"
@@ -51,6 +51,19 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
     max_error = abs(reading) * (percent_reading/100) + digits * resolution  # max_error -- krajni nejistota
     u_B = max_error
 
+    return u_B
+
+
+# nejistota u cteni z nejmensiho dilku
+def unc_B_cteni(a):
+    """
+    Nejistota typu B pro napr pravitko
+    data : float
+        nejmensi dilek
+    return : float
+        nejistota typu B
+    """
+    u_B = a/(3**0.5)
     return u_B
 
 
