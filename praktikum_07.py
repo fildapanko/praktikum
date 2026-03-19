@@ -31,3 +31,5 @@ def uncertainty_typeA(data):
     u_A = s / np.sqrt(n)
     
     return u_A
+
+A = uf(data, uncertainty_typeA(data)
