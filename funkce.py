@@ -1,10 +1,12 @@
 # import knihoven
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from uncertainties import ufloat as uf
 from scipy.optimize import curve_fit
 from scipy import stats
 from uncertainties import unumpy as unp
+
 
 # nacteni google tabulek
 sheet_id = "SPREADSHEET_ID"
@@ -54,7 +56,7 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
     return u_B
 
 
-# nejistota u cteni z nejmensiho dilku
+# nejistota typu B u cteni z nejmensiho dilku
 def unc_B_cteni(a):
     """
     Nejistota typu B pro napr pravitko
