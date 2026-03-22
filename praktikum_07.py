@@ -183,5 +183,13 @@ freq = np.array([840, 995, 1095, 1255])
 rho = 1.167065
 
 kappa = (rho * 4 * (lambda2**2) * freq**2)/p0_u
-kappa_u = weight_average(kappa)
+
+values = unp.nominal_values(kappa)
+errors = unp.std_devs(kappa)
+weights = 1 / errors**2
+mean = np.sum(weights * values) / np.sum(weights)
+unc = np.sqrt(1 / np.sum(weights))
+unc = unc * StudCoef(0.9973, 3)
+kappa_u = uf(mean, unc)
+
 print(f'Kappa z fitu je: {kappa_u:.1u}')
