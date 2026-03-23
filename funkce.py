@@ -81,4 +81,15 @@ def StudCoef(confidence, dof):
     Studentuv koeficient pro danou hladinu spolehlivosti a pocet stupnu volnosti
     """
     alpha = 1 - confidence
-    return stats.t.ppf(1 - alpha/2, dof) 
+    return stats.t.ppf(1 - alpha/2, dof)
+
+
+# funkce na vazeny prumer
+def weight_average(hodnota): # hodnota : uarray
+    values = unp.nominal_values(hodnota)
+    errors = unp.std_devs(hodnota)
+    weights = 1 / errors**2
+    mean = np.sum(weights * values) / np.sum(weights)
+    unc = np.sqrt(1 / np.sum(weights))
+    unc = unc * StudCoef(0.9973, 9)
+    return uf(mean, unc)
