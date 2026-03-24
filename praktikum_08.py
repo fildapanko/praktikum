@@ -157,8 +157,44 @@ url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=
 df_relax = pd.read_csv(url)
 
 
-# fit a graf
+# exponencialni fit
+def exp_model(x, a, b):
+    return a * np.exp(b * x)
+
+values = []
+errors = []
+
+# funkce na fitovani
+def fit_exp_plot(df, columnx, columny, barva):
+    colx = np.array(df[f'{columnx}'].iloc[555:])
+    coly = np.array(df[f'{columny}'].iloc[555:])
+    popt, pcov = curve_fit(exp_model, colx, coly, p0=None, bounds=(-np.inf, np.inf))
+    A, b = popt # OPTimalni Parametry -- popt
+    A_u, b_u = np.sqrt(np.diag(pcov)) # nejistota parametru z kovariancni matice
+
+    values.append(abs(A))
+    errors.append(abs(A_u))
+
+    A = uf(A, A_u)
+    b = uf(b, b_u)
+
+    U_fit = np.linspace(min(colx), max(colx), 1000)
+    ax.plot(U_fit, exp_model(U_fit, *popt), label=fr"Exponenciální fit: xxx = {A:.1uPL} ", color=f"{barva}")
+
+
+
 # graf hodnot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.plot(df_relax['cas'], df_relax['napeti'])
+ax.set_title("Relaxační doba čidla", fontsize=25, pad=15)
+ax.set_xlabel(fr"$t\,(s)$", fontsize=20)
+ax.set_ylabel(fr"$U\,(V)$", fontsize=20)
+ax.plot(df_relax['cas'], df_relax['napeti'], label='hodnoty', color='blue')
+ax.tick_params(labelsize=15)
+ax.grid(True, alpha=0.7)
+
+
+# vykresleni fitu
+fit_exp_plot(df_relax, 'cas', 'napeti', '#0072B2')
+
+ax.legend(fontsize=15)
 plt.show()
