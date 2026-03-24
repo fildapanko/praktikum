@@ -50,6 +50,8 @@ gid = "1924903675"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 df_infra = pd.read_csv(url)
 
+
+# emisivita povrchu
 t = np.array(df_infra['Ccerna'])
 tir = np.array(df_infra['cerna'])
 
@@ -59,7 +61,7 @@ unc_tir = unc_B_digital(df_infra['cerna'], 1, 1, 1)
 t_unc = unp.uarray(t, unc_t)
 tir_unc = unp.uarray(tir, unc_tir)
 
-epsilon = (tir_unc**4)/(t_unc**4)
+epsilon = ((tir_unc+273.15)**4)/((t_unc+273.15)**4)
 
 # funkce na vazeny prumer
 def weight_average(hodnota): # hodnota : uarray
@@ -68,8 +70,95 @@ def weight_average(hodnota): # hodnota : uarray
     weights = 1 / errors**2
     mean = np.sum(weights * values) / np.sum(weights)
     unc = np.sqrt(1 / np.sum(weights))
-    unc = unc * StudCoef(0.9973, 9)
-    return uf(mean, unc)
+    unc = unc * StudCoef(0.9973, 4)
+    return uf(mean, unc) # return : ufloat
 
 epsilon = weight_average(epsilon)
-print(f'Epsilon materialu je {epsilon:.1u}')
+#print(f'Epsilon černé desky je: {epsilon:.1u}')
+
+
+t = np.array(df_infra['Cseda'])
+tir = np.array(df_infra['seda'])
+
+unc_t = unc_B_digital(df_infra['Cseda'], 1, 1, 1)
+unc_tir = unc_B_digital(df_infra['seda'], 1, 1, 1)
+
+t_unc = unp.uarray(t, unc_t)
+tir_unc = unp.uarray(tir, unc_tir)
+
+epsilon = ((tir_unc+273.15)**4)/((t_unc+273.15)**4)
+epsilon = weight_average(epsilon)
+#print(f'Epsilon šedé desky je: {epsilon:.1u}')
+
+
+# propustnost okenek
+ir = np.array(df_infra['Ckremik'])
+okno = np.array(df_infra['kremik'])
+
+unc_ir = unc_B_digital(df_infra['Ckremik'], 1, 1, 1)
+unc_okno = unc_B_digital(df_infra['kremik'], 1, 1, 1)
+
+ir_unc = unp.uarray(ir, unc_ir)
+okno_unc = unp.uarray(okno, unc_okno)
+
+tau = ((okno_unc+273.15)**4)/((ir_unc+273.15)**4)
+tau = weight_average(tau)
+#print(f'Tau křemíku je: {tau:.1u}')
+
+
+ir = np.array(df_infra['Cnacl'])
+okno = np.array(df_infra['nacl'])
+
+unc_ir = unc_B_digital(df_infra['Cnacl'], 1, 1, 1)
+unc_okno = unc_B_digital(df_infra['nacl'], 1, 1, 1)
+
+ir_unc = unp.uarray(ir, unc_ir)
+okno_unc = unp.uarray(okno, unc_okno)
+
+tau = ((okno_unc+273.15)**4)/((ir_unc+273.15)**4)
+tau = weight_average(tau)
+#print(f'Tau NaCl je: {tau:.1u}')
+
+
+# zmrazena ledova deska
+t = np.array(df_infra['Cled'])
+tir = np.array(df_infra['led'])
+
+unc_t = unc_B_digital(df_infra['Cled'], 1, 1, 1)
+unc_tir = unc_B_digital(df_infra['led'], 1, 1, 1)
+
+t_unc = unp.uarray(t, unc_t)
+tir_unc = unp.uarray(tir, unc_tir)
+
+epsilon = ((tir_unc+273.15)**4)/((t_unc+273.15)**4)
+epsilon = weight_average(epsilon)
+#print(f'Epsilon poledované desky je: {epsilon:.1u}')
+
+t = np.array(df_infra['Cmed'])
+tir = np.array(df_infra['med'])
+
+unc_t = unc_B_digital(df_infra['Cmed'], 1, 1, 1)
+unc_tir = unc_B_digital(df_infra['med'], 1, 1, 1)
+
+t_unc = unp.uarray(t, unc_t)
+tir_unc = unp.uarray(tir, unc_tir)
+
+epsilon = ((tir_unc+273.15)**4)/((t_unc+273.15)**4)
+epsilon = weight_average(epsilon)
+#print(f'Epsilon měděné desky je: {epsilon:.1u}')
+
+
+# relaxacni doba
+
+# nacteni google tabulek
+sheet_id = "1SabDjWsPIsUqenpKLWSS_sL0DrfNNjyDOQ5PH-PDqho"
+gid = "408060846"
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+df_relax = pd.read_csv(url)
+
+
+# fit a graf
+# graf hodnot
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.plot(df_relax['cas'], df_relax['napeti'])
+plt.show()

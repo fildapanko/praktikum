@@ -173,7 +173,7 @@ fit_lin_plot(df_zvuk, 'f1095', '#009E73')
 fit_lin_plot(df_zvuk, 'f1255', '#CC79A7')
 
 ax.legend(fontsize=15)
-plt.savefig(r"C:\Users\Admin\Downloads\lambdapul.png", dpi=300)
+#plt.savefig(r"C:\Users\Admin\Downloads\lambdapul.png", dpi=300)
 plt.show()
 
 
