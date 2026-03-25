@@ -31,6 +31,7 @@ popt, _ = curve_fit(model, t, U, p0=p0, maxfev=10000)
 A, tau, U_inf = popt
 
 print("tau =", tau)
+print(U_inf)
 
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.set_title("Relaxační doba čidla", fontsize=25, pad=15)
@@ -43,4 +44,3 @@ ax.grid(True, alpha=0.7)
 U_fit = np.linspace(min(t), max(t), 1000)
 ax.plot(U_fit+df_relax.iloc[555,0], model(U_fit, *popt), label="Exponenciální fit: xxx = ", color='red')
 plt.show()
-print(min(t))
