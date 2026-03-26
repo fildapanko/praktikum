@@ -55,8 +55,8 @@ df_infra = pd.read_csv(url)
 t = np.array(df_infra['Ccerna'])
 tir = np.array(df_infra['cerna'])
 
-unc_t = unc_B_digital(df_infra['Ccerna'], 1, 1, 1)
-unc_tir = unc_B_digital(df_infra['cerna'], 1, 1, 1)
+unc_t = unc_B_digital(df_infra['Ccerna'], 0.15, 10, 0.1)
+unc_tir = unc_B_digital(df_infra['cerna'], 0, 15, 0.1)
 
 t_unc = unp.uarray(t, unc_t)
 tir_unc = unp.uarray(tir, unc_tir)
@@ -74,78 +74,78 @@ def weight_average(hodnota): # hodnota : uarray
     return uf(mean, unc) # return : ufloat
 
 epsilon = weight_average(epsilon)
-#print(f'Epsilon černé desky je: {epsilon:.1u}')
+print(f'Epsilon černé desky je: {epsilon:.1u}')
 
 
 t = np.array(df_infra['Cseda'])
 tir = np.array(df_infra['seda'])
 
-unc_t = unc_B_digital(df_infra['Cseda'], 1, 1, 1)
-unc_tir = unc_B_digital(df_infra['seda'], 1, 1, 1)
+unc_t = unc_B_digital(df_infra['Cseda'], 0.15, 10, 0.1)
+unc_tir = unc_B_digital(df_infra['seda'], 0, 15, 0.1)
 
 t_unc = unp.uarray(t, unc_t)
 tir_unc = unp.uarray(tir, unc_tir)
 
 epsilon = ((tir_unc+273.15)**4)/((t_unc+273.15)**4)
 epsilon = weight_average(epsilon)
-#print(f'Epsilon šedé desky je: {epsilon:.1u}')
+print(f'Epsilon šedé desky je: {epsilon:.1u}')
 
 
 # propustnost okenek
 ir = np.array(df_infra['Ckremik'])
 okno = np.array(df_infra['kremik'])
 
-unc_ir = unc_B_digital(df_infra['Ckremik'], 1, 1, 1)
-unc_okno = unc_B_digital(df_infra['kremik'], 1, 1, 1)
+unc_ir = unc_B_digital(df_infra['Ckremik'], 0, 15, 0.1)
+unc_okno = unc_B_digital(df_infra['kremik'], 0, 15, 0.1)
 
 ir_unc = unp.uarray(ir, unc_ir)
 okno_unc = unp.uarray(okno, unc_okno)
 
 tau = ((okno_unc+273.15)**4)/((ir_unc+273.15)**4)
 tau = weight_average(tau)
-#print(f'Tau křemíku je: {tau:.1u}')
+print(f'Tau křemíku je: {tau:.1u}')
 
 
 ir = np.array(df_infra['Cnacl'])
 okno = np.array(df_infra['nacl'])
 
-unc_ir = unc_B_digital(df_infra['Cnacl'], 1, 1, 1)
-unc_okno = unc_B_digital(df_infra['nacl'], 1, 1, 1)
+unc_ir = unc_B_digital(df_infra['Cnacl'], 0, 15, 0.1)
+unc_okno = unc_B_digital(df_infra['nacl'], 0, 15, 0.1)
 
 ir_unc = unp.uarray(ir, unc_ir)
 okno_unc = unp.uarray(okno, unc_okno)
 
 tau = ((okno_unc+273.15)**4)/((ir_unc+273.15)**4)
 tau = weight_average(tau)
-#print(f'Tau NaCl je: {tau:.1u}')
+print(f'Tau NaCl je: {tau:.1u}')
 
 
 # zmrazena ledova deska
 t = np.array(df_infra['Cled'])
 tir = np.array(df_infra['led'])
 
-unc_t = unc_B_digital(df_infra['Cled'], 1, 1, 1)
-unc_tir = unc_B_digital(df_infra['led'], 1, 1, 1)
+unc_t = unc_B_digital(df_infra['Cled'], 0.15, 10, 0.1)
+unc_tir = unc_B_digital(df_infra['led'], 0, 15, 0.1)
 
 t_unc = unp.uarray(t, unc_t)
 tir_unc = unp.uarray(tir, unc_tir)
 
 epsilon = ((tir_unc+273.15)**4)/((t_unc+273.15)**4)
 epsilon = weight_average(epsilon)
-#print(f'Epsilon poledované desky je: {epsilon:.1u}')
+print(f'Epsilon poledované desky je: {epsilon:.1u}')
 
 t = np.array(df_infra['Cmed'])
 tir = np.array(df_infra['med'])
 
-unc_t = unc_B_digital(df_infra['Cmed'], 1, 1, 1)
-unc_tir = unc_B_digital(df_infra['med'], 1, 1, 1)
+unc_t = unc_B_digital(df_infra['Cmed'], 0.15, 10, 0.1)
+unc_tir = unc_B_digital(df_infra['med'], 0, 15, 0.1)
 
 t_unc = unp.uarray(t, unc_t)
 tir_unc = unp.uarray(tir, unc_tir)
 
 epsilon = ((tir_unc+273.15)**4)/((t_unc+273.15)**4)
 epsilon = weight_average(epsilon)
-#print(f'Epsilon měděné desky je: {epsilon:.1u}')
+print(f'Epsilon měděné desky je: {epsilon:.1u}')
 
 
 # relaxacni doba
@@ -156,45 +156,69 @@ gid = "408060846"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 df_relax = pd.read_csv(url)
 
+t = df_relax["cas"].iloc[555:]
+U = df_relax["napeti"].iloc[555:]
 
-# exponencialni fit
-def exp_model(x, a, b):
-    return a * np.exp(b * x)
+# normalizace času
+t = t - t.min()
 
-values = []
-errors = []
+# model
+def model(t, A, tau, U_inf):
+    return U_inf + A * np.exp(-t / tau)
 
-# funkce na fitovani
-def fit_exp_plot(df, columnx, columny, barva):
-    colx = np.array(df[f'{columnx}'].iloc[555:])
-    coly = np.array(df[f'{columny}'].iloc[555:])
-    popt, pcov = curve_fit(exp_model, colx, coly, p0=None, bounds=(-np.inf, np.inf))
-    A, b = popt # OPTimalni Parametry -- popt
-    A_u, b_u = np.sqrt(np.diag(pcov)) # nejistota parametru z kovariancni matice
+# odhad
+p0 = [max(U) - min(U), 10, min(U)]
 
-    values.append(abs(A))
-    errors.append(abs(A_u))
+popt, pcov = curve_fit(model, t, U, p0=p0, maxfev=10000)
+A, tau, U_inf = popt
+unc_A, unc_tau, unc_Uinf = np.sqrt(np.diag(pcov))
+U_fit = np.linspace(min(t), max(t), 1000)
 
-    A = uf(A, A_u)
-    b = uf(b, b_u)
+tau_unc = uf(tau, unc_tau)
+print(f'Relaxační doba je: {tau_unc:.1u}')
 
-    U_fit = np.linspace(min(colx), max(colx), 1000)
-    ax.plot(U_fit, exp_model(U_fit, *popt), label=fr"Exponenciální fit: xxx = {A:.1uPL} ", color=f"{barva}")
-
-
-
-# graf hodnot
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.set_title("Relaxační doba čidla", fontsize=25, pad=15)
 ax.set_xlabel(fr"$t\,(s)$", fontsize=20)
 ax.set_ylabel(fr"$U\,(V)$", fontsize=20)
-ax.plot(df_relax['cas'], df_relax['napeti'], label='hodnoty', color='blue')
+ax.plot(df_relax['cas'], df_relax['napeti'], label='Hodnoty', color='blue')
+ax.plot(U_fit+df_relax.iloc[555,0], model(U_fit, *popt), label="Exponenciální fit", color='red')
 ax.tick_params(labelsize=15)
 ax.grid(True, alpha=0.7)
-
-
-# vykresleni fitu
-fit_exp_plot(df_relax, 'cas', 'napeti', '#0072B2')
-
 ax.legend(fontsize=15)
-plt.show()
+plt.savefig(r"C:\Users\Admin\Downloads\relaxdoba.png", dpi=300)
+
+
+
+# olejova lazen
+
+# nacteni google tabulek
+sheet_id = "1SabDjWsPIsUqenpKLWSS_sL0DrfNNjyDOQ5PH-PDqho"
+gid = "894266709"
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+df_olej = pd.read_csv(url)
+
+# linearni fit
+def linear_model(x, a, b):
+    return a * x + b
+
+# funkce na fitovani
+popt, pcov = curve_fit(linear_model, df_olej['teplota'], df_olej['napeti'],p0=None, bounds=(0, np.inf))
+A, b = popt # OPTimalni Parametry -- popt
+A_u, b_u = np.sqrt(np.diag(pcov)) # nejistota parametru z kovariancni matice
+A = uf(A, A_u)
+b = uf(b, b_u)
+U_fit = np.linspace(34, 100, 100)
+print(f'Závislost prvního čidla je: {A:.1u}')
+
+# graf a fit
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.set_title('Závislost napětí na teplotě', fontsize=25, pad=15)
+ax.set_xlabel(fr'$T\,(°C)$', fontsize=20)
+ax.set_ylabel(fr'$\Delta U\,(V)$', fontsize=20)
+ax.scatter(df_olej['teplota'], df_olej['napeti'],marker=".",label='Naměřené hodnoty', color='blue', s=100)
+ax.plot(U_fit, linear_model(U_fit, *popt), label=fr"Lineární fit: $\beta$ = {A:.1uPL} $U/°C$", color='cyan')
+ax.tick_params(labelsize=15)
+ax.grid(True, alpha=0.7)
+ax.legend(fontsize=15)
+plt.savefig(r"C:\Users\Admin\Downloads\olejlazen.png", dpi=300)
