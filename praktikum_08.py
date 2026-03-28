@@ -178,7 +178,6 @@ tau_unc = uf(tau, unc_tau)
 print(f'Relaxační doba je: {tau_unc:.1u}')
 
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.set_title("Relaxační doba čidla", fontsize=25, pad=15)
 ax.set_xlabel(fr"$t\,(s)$", fontsize=20)
 ax.set_ylabel(fr"$U\,(V)$", fontsize=20)
 ax.plot(df_relax['cas'], df_relax['napeti'], label='Hodnoty', color='blue')
@@ -213,12 +212,49 @@ print(f'Závislost prvního čidla je: {A:.1u}')
 
 # graf a fit
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.set_title('Závislost napětí na teplotě', fontsize=25, pad=15)
 ax.set_xlabel(fr'$T\,(°C)$', fontsize=20)
-ax.set_ylabel(fr'$\Delta U\,(V)$', fontsize=20)
+ax.set_ylabel(fr'$U\,(V)$', fontsize=20)
 ax.scatter(df_olej['teplota'], df_olej['napeti'],marker=".",label='Naměřené hodnoty', color='blue', s=100)
-ax.plot(U_fit, linear_model(U_fit, *popt), label=fr"Lineární fit: $\beta$ = {A:.1uPL} $U/°C$", color='cyan')
+ax.plot(U_fit, linear_model(U_fit, *popt), label=fr"Lineární fit: $\beta$ = {A:.1uPL} $V/°C$", color='cyan')
 ax.tick_params(labelsize=15)
 ax.grid(True, alpha=0.7)
 ax.legend(fontsize=15)
-plt.savefig(r"C:\Users\Admin\Downloads\olejlazen.png", dpi=300)
+plt.savefig(r"C:\Users\Admin\Downloads\olejnapeti.png", dpi=300)
+
+
+# funkce na fitovani
+popt, pcov = curve_fit(linear_model, df_olej['teplota'], df_olej['odpor1'],p0=None, bounds=(0, np.inf))
+A, b = popt # OPTimalni Parametry -- popt
+A_u, b_u = np.sqrt(np.diag(pcov)) # nejistota parametru z kovariancni matice
+A = uf(A, A_u)
+b = uf(b, b_u)
+U_fit = np.linspace(34, 100, 100)
+A = A/b
+print(f'Závislost druhého čidla je: {A:.1uPL} \n R0 je: {b:.1uPL}')
+
+# graf a fit
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.set_xlabel(fr'$T\,(°C)$', fontsize=20)
+ax.set_ylabel(fr'$R\,(\Omega)$', fontsize=20)
+
+ax.scatter(df_olej['teplota'], df_olej['odpor1'],marker=".",label='Naměřené hodnoty', color='red', s=100)
+ax.scatter(df_olej['teplota'], df_olej['odpor2'],marker=".",label='Naměřené hodnoty', color='green', s=100)
+
+ax.plot(U_fit, linear_model(U_fit, *popt), label=fr'Lineární fit: $\alpha_1$ = {A:.1uPL} 'r'$\mathrm{°C}^{-1}$', color='orange')
+
+# funkce na fitovani
+popt, pcov = curve_fit(linear_model, df_olej['teplota'], df_olej['odpor2'],p0=None, bounds=(0, np.inf))
+A, b = popt # OPTimalni Parametry -- popt
+A_u, b_u = np.sqrt(np.diag(pcov)) # nejistota parametru z kovariancni matice
+A = uf(A, A_u)
+b = uf(b, b_u)
+U_fit = np.linspace(34, 100, 100)
+A = A/b
+print(f'Závislost třetího čidla je: {A:.1uPL} \n R0 je: {b:.1uPL}')
+
+ax.plot(U_fit, linear_model(U_fit, *popt), label=fr'Lineární fit: $\alpha_2$ = {A:.1uPL} 'r'$\mathrm{°C}^{-1}$', color='lime')
+
+ax.tick_params(labelsize=15)
+ax.grid(True, alpha=0.7)
+ax.legend(fontsize=15)
+plt.savefig(r"C:\Users\Admin\Downloads\olejodpor.png", dpi=300)
