@@ -1,0 +1,75 @@
+# import knihoven
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from uncertainties import ufloat as uf
+from scipy.optimize import curve_fit
+from uncertainties import unumpy as unp
+from scipy import stats
+
+# funkce na Studentuv koeficient
+def StudCoef(confidence, dof): 
+    """
+    Parametry
+    confidence : float
+        hladina spolehlivosti, typicke hodnoty 0.683, 0.9973;
+    dof : 
+        pocet stupnu volnosti, pro jednoduchou statistiku array.size-1
+    Returns : float
+    Studentuv koeficient pro danou hladinu spolehlivosti a pocet stupnu volnosti
+    """
+    alpha = 1 - confidence
+    return stats.t.ppf(1 - alpha/2, dof)
+
+# nejistoty typu B pro digitalni pristroje
+def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi byt ve spravnych jednotkach; funguje pouze pro jedny podminky zaroven
+    """
+    Vypocet nejistoty typu B pro digitalni mereni (ponechame krajni)
+
+    reading : float nebo array
+        namerena hodnota
+    percent_reading : float
+        % of reading
+    digits : float
+        pocet digitu
+    resolution : float
+        nejmensi dilek
+    """
+
+    max_error = abs(reading) * (percent_reading/100) + digits * resolution  # max_error -- krajni nejistota
+    u_B = max_error / 3
+
+    return u_B
+
+# nacteni google tabulek
+sheet_id = "1fWm_pEDu0Hblxh12eK3tPYXtQ9wCVlQNpoaQT7EcBMM"
+gid = "0"
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+df_analog = pd.read_csv(url)
+
+
+# analogova cast
+
+# vnitrni odpor ampermetru
+I = df_analog.loc[0, 'ia']
+unc_I = 1.5e-6
+I_unc = uf(I*1e-6, unc_I)
+
+U = df_analog.loc[0, 'uv']
+unc_U = unc_B_digital(U, 0.02, 4, 1e-4)
+U_unc = uf(U, unc_U)
+
+R = U_unc/I_unc
+print(f'Vnitřní odpor ampérmetru přímo z Ohmova zákona je: {R:.1uPL}')
+print('Vnitřní odpor ampérmetru ze substituční metody je: 1580 +- ??')
+
+# bocniky
+print('Velikosti bočníků jsou: 400, 180, 85')
+
+# predradniky
+print('Velikosti předřadníků jsou: 49000 a 99500')
+
+
+# digitalni cast
+
+#
