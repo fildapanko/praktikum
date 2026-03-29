@@ -103,6 +103,9 @@ df_voltamper = pd.read_csv(url)
 def linear_model(x, a, b):
     return a * x + b
 
+# fit polynomem
+def polynom_model(x, a, b, c):
+    return a*x**2 + b*x + c
 
 # odhad parametru, hranice
 R_initial = df_voltamper.loc[0,"Uv"] / (df_voltamper.loc[0, "Ia"]/1000)
@@ -118,16 +121,16 @@ popt, pcov = curve_fit(linear_model, df_voltamper["Uv"], df_voltamper["Ia"], p0=
 R, b = popt # OPTimalni Parametry -- popt
 R_u, b_u = np.sqrt(np.diag(pcov)) # nejistota parametru z kovariancni matice
 
-R = uf(R, R_u)
-b = uf(b, b_u)
+R_unc = uf(R, R_u)
+b_unc = uf(b, b_u)
 
+R_konec = 1/(R_unc * 1e-3)
 
 # graf hodnot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.set_title("Voltampérová charakteristika žárovky", fontsize=25, pad=15)
 ax.set_xlabel(fr"$U~[V]$", fontsize=20)
 ax.set_ylabel(fr"$I~[mA]$", fontsize=20)
-ax.scatter(df_voltamper["Uv"], df_voltamper["Ia"],marker="o",label="Naměřené hodnoty", color="blue", s=100)
+ax.scatter(df_voltamper["Uv"], df_voltamper["Ia"],marker=".",label="Naměřené hodnoty", color="blue", s=250)
 ax.tick_params(labelsize=15)
 ax.grid(True, alpha=0.7)
 
@@ -135,12 +138,18 @@ ax.grid(True, alpha=0.7)
 # vykresleni fitu
 U_fit = np.linspace(df_voltamper["Uv"].min(), df_voltamper["Uv"].max(), 100)
 
-ax.plot(U_fit, linear_model(U_fit, *popt), label=fr"Lineární fit: $R$ = {R:.1uPL} $\Omega$", color="red")
+ax.plot(U_fit, linear_model(U_fit, *popt), label=f"Lineární fit (Ax + b):\n$A$ = {R}\n$b$ = {b}", color="red")
+
+# vypocet hodnot pro fit polynomem
+popt, pcov = curve_fit(polynom_model, df_voltamper["Uv"], df_voltamper["Ia"], p0=None, bounds=(-np.inf, np.inf))
+
+a, b, c = popt # OPTimalni Parametry -- popt
+a_u, b_u , c_u= np.sqrt(np.diag(pcov)) # nejistota parametru z kovariancni matice
+
+ax.plot(U_fit, polynom_model(U_fit, *popt), label=f'Fit polynomem (ax$^2$ + bx + c):\n$a$ = {a}\n$b$ = {b}\n$c$ = {c}', color="lime")
 
 ax.legend(fontsize=15)
-plt.show()
-
-fig.savefig("IUchar.png", dpi=300, bbox_inches='tight')
-
+plt.savefig(r"C:\Users\Admin\Downloads\VAchar.png", dpi=300, bbox_inches='tight')
+print(f'Výsledný odpor z lineárního fitu je: {R_konec}')
 
 print(f"odpory jsou: \n Metoda A: \n {R_1Aa:.1u} \n {R_1Ab:.1u} \n {R_2Aa:.1u} \n {R_2Ab:.1u} \n Metoda B: \n {R_1Ba:.1u} \n {R_1Bb:.1u} \n {R_2Ba:.1u} \n {R_2Bb:.1u}")
