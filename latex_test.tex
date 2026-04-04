@@ -1,0 +1,309 @@
+% Format: pdflatex
+% Hlavicka pro protokoly z fyzikalniho praktika.
+% Verze pro: LaTeX
+% Verze hlavicky: brezen 2023
+% Autor: Petr Mikulik, Ustav fyziky kondenzovanych latek
+% Ke stazeni: www.physics.muni.cz/ufkl/Vyuka/ - zde ale starsi verze
+% Licence: volne k pouziti, nejlepe k vcasnemu odevzdani protokolu z Vaseho mereni.
+%
+% Historie dokumentu:
+%   duben 2025: seminární skupina a učo v hlavičce  (ZN)
+%   unor 2025: zmena nazvu ustavu, prikazy pro vypis hodnot s nejistotami (ZN)
+%	brezen 2023: Seznam ustavu. Obezlicka pro \cline. Tecka v \subsubsection. Volba \ChciVypsatTlak.
+%	rijen 2015:  Pridana obezlicka k desetinne carce.
+%	22. 2. 2007: Puvodni verze.
+
+\documentclass[a4paper,11pt]{article}
+
+% Kodovani (cestiny) v dokumentu: (doporucujeme UTF-8).
+\usepackage[utf8]{inputenc}	% Doporucujeme pouzivat UTF-8 (unicode).
+
+%%% Nemente:
+\usepackage[margin=2cm]{geometry}
+\newtoks\jmenopraktika \newtoks\jmeno \newtoks\datum
+\newtoks\obor \newtoks\rocnik \newtoks\semestr
+\newtoks\cisloulohy \newtoks\jmenoulohy
+\newtoks\tlak \newtoks\teplota \newtoks\vlhkost
+\newtoks\uco \newtoks\skupina
+
+\def\UFKL{Ústav fyziky kondenzovaných látek}
+\def\UFTP{Ústav fyziky a technologií plazmatu}
+\def\UTFA{Ústav teoretické fyziky a astrofyziky}
+\def\FyzSekce{Fyzikální sekce}
+%%% Nemente - konec.
+
+
+%%%%%%%%%%% Doplnte pozadovane polozky:
+
+\jmenopraktika={Fyzikální praktikum 1}  % nahradte jmenem predmetu
+\let\ustav\UTFA               % nahradte zkratkou ustavu, na kterem praktikum probiha
+\jmeno={Filip Macháček}            % nahradte jmenem experimentatora
+\uco={578998}                   % nahradte vaším univerzitním číslem
+\obor={Fyzika}                % nahradte zkratkou studovaneho oboru
+\rocnik={I}                 % nahradte rocnikem, ve kterem studujete
+\semestr={II}                 % nahradte semestrem, ve kterem studujete
+\skupina={čtvrtek 11:00}        % nahradte termínem vaší seminární kupiny
+
+\datum={26.~března 2026}        % nahradte datem mereni ulohy
+\cisloulohy={9}               % nahradte cislem merene ulohy
+\jmenoulohy={Měření elektrického napětí a proudu} % nahradte jmenem merene ulohy
+
+\let\ChciVypsatTlak\iftrue    % pouzijte \iffalse ci \iftrue pokud (ne)chcete vypsat nize uvedene
+\tlak={976,9}                   % nahradte tlakem pri mereni (v desetinách hPa)
+\teplota={21,9}               % nahradte teplotou pri mereni (ve stupnich Celsia)
+\vlhkost={39,2}               % nahradte vlhkosti vzduchu pri mereni (v %)
+
+%%%%%%%%%%% Konec pozadovanych polozek.
+
+
+%%%%%%%%%%% Uzitecne balicky:
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage{indentfirst}
+\usepackage[pdftex]{xcolor}
+\usepackage{listings}  % pro výpisy zdrojového kódu
+\lstset{language=Python,
+    basicstyle=\ttfamily\fontsize{8}{8}\selectfont,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+} 
+\usepackage[pdftex, urlcolor=blue]{hyperref}
+
+\usepackage{appendix}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{siunitx}
+
+
+%%%%%% Zamezeni parchantu:
+\widowpenalty 10000 \clubpenalty 10000 \displaywidowpenalty 10000
+%%%%%% Parametry pro moznost vsazeni vetsiho poctu obrazku na stranku
+\setcounter{topnumber}{3}	  % max. pocet floatu nahore (specifikace t)
+\setcounter{bottomnumber}{3}	  % max. pocet floatu dole (specifikace b)
+\setcounter{totalnumber}{6}	  % max. pocet floatu na strance celkem
+\renewcommand\topfraction{0.9}	  % max podil stranky pro floaty nahore
+\renewcommand\bottomfraction{0.9} % max podil stranky pro floaty dole
+\renewcommand\textfraction{0.1}	  % min podil stranky, ktery musi obsahovat text
+\intextsep=8mm \textfloatsep=8mm  %\intextsep pro ulozeni [h] floatu a \textfloatsep pro [b] or [t]
+
+% Tecky za cisly sekci:
+\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand{\thesubsection}{\thesection\arabic{subsection}.}
+\renewcommand{\thesubsubsection}{\thesubsection\arabic{subsubsection}.}
+% Jednopismenna mezera mezi cislem a nazvem kapitoly:
+\makeatletter \def\@seccntformat#1{\csname the#1\endcsname\hspace{1ex}} \makeatother
+
+% Desetinna carka - desetinna cisla piseme v ceskem textu s desetinnou carkou,
+% takze nechceme, aby byla carka v matematickem rezimu interpunkci a tedy
+% at za ni neni mala mezera. Vedlejsi dusledek: carka prestane byt interpunkci
+% vsude, napr. ve vyctu A = (1, 2, 3).
+% Bez tehle obezlicky se musi psat desetinna cisla takto: 3{,}141592 anebo
+% vsude pouzivat desetinna tecka.
+\mathcode`\,="013B
+
+% Vyřešení problému s aktivní pomlčkou např. v \cline a \pdfpages:
+% Balíček babel nastaví pomlčku - na aktivní znak, protože česká typografie
+% vyžaduje při dělení spojených slov např. "česko-anglický" opakování spojovníku 
+% i na dalším řádku. To ovšem způsobuje chyby v příkazech \cline nebo \pdfpages.
+% Pokud na tento problém narazíte, pak ho vyřešte jednou z následujících možností:
+% 1. Tabulky, ve kterých příkaz \cline použijete, obalte následovně:
+%        \shorthandoff{-} \begin{tabular} ... \end{tabular} \shorthandon{-}
+% 2. Aktivujte výše uvedené pro všechny tabulky v dokumentu odpoznámkováním tohoto:
+% \usepackage{etoolbox}
+% \preto\tabular{\shorthandoff{-}}
+% 3. Vypněte aktivní pomlčky globálně v celém dokumentu odpoznámkováním tohoto:
+% \AtBeginDocument{\shorthandoff{-}}
+
+% výsledek se standardní nejistotou:
+\newcommand{\vsn}[4]{\ensuremath{#1 =} #2(#3)\,#4} 
+% výsledek s rozšířenou nejistotou:
+\newcommand{\vrn}[6]{\ensuremath{#1 =} ( #2 $\pm$ #3)\,#4 ($p=$ #5\,\%, $\nu=$ #6)}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Zacatek dokumentu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sazba zahlavi - Nemente:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{empty}
+
+{
+\begin{center}
+\sf 
+% {\Large Fyzikální sekce přírodovědecké fakulty Masarykovy univerzity v~Brně} \\
+{\Large \ustav{} Přírodovědecké fakulty Masarykovy univerzity} \\
+\bigskip
+{\huge \bfseries FYZIKÁLNÍ PRAKTIKUM} \\
+\bigskip
+{\Large \the\jmenopraktika}
+\end{center}
+
+\bigskip
+
+\sf
+\noindent
+\setlength{\arrayrulewidth}{1pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l l}
+\large {\bfseries Zpracoval:}  \the\jmeno \hspace{5mm} {\bfseries UČO:}  \href{mailto:\the\uco @mail.muni.cz}{\the\uco} \hspace{5mm} {\bfseries Skupina:} \the\skupina & \large  {\bfseries Naměřeno:} \the\datum\\[2mm]
+\large  {\bfseries Obor:} \the\obor  \hspace{5mm}  {\bfseries Ročník:} \the\rocnik 
+\hspace{5mm} {\bfseries Semestr:} \the\semestr  &\large {\bfseries Testováno:}\\
+\\
+\hline
+\end{tabular*}
+}
+
+\bigskip
+
+{
+\sf
+\noindent \begin{tabular}{p{3cm} p{0.6\textwidth}}
+\Large  Úloha č. {\bfseries \the\cisloulohy:}
+\ChciVypsatTlak
+    \large
+    \par
+    \medskip
+    $T=\the\teplota$\,$^\circ$C \par
+    $p=\the\tlak$~hPa \par
+    $\varphi=\the\vlhkost$~\%
+\fi
+&\Large \bfseries \the\jmenoulohy  \\[2mm]
+\end{tabular}
+}
+
+\vskip1cm
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% konec Sazba zahlavi - Nemente.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Zacatek textu vlastniho protokolu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Úvod a teorie}
+Vysvětlete zde, co je cílem měření. Popište veličinu, kterou chcete stanovit, jaké přímo měřené veličiny potřebujete změřit, na využití jakého jevu je měření založeno. Uveďte vztahy, do kterých při výpočtech dosazujete a vysvětlete význam symbolů, které tyto vztahy obsahují. Text čleňte do odstavců podle významu.
+
+Velmi zajímavá veličina je definována vztahem
+$$F = \frac{G}{H},$$
+ve kterém $G$ je ... a $H$ je ... Po dosazení ... lze $F$ stanovit podle vztahu
+\begin{equation}
+ F = \frac{m}{x y z},\label{eq:F}   
+\end{equation}
+ve kterém $m$ je ..., $x$ ... atd. Vysvětlíme všechny nejednoznačně používané symboly.
+ \section{Použité postupy a přístroje}
+
+Měření provádíme podle postupu ... Další detaily čtenář nalezne v návodu k~úloze~1 \cite{navody}. K měření jsme použili tyto přístroje
+\begin{itemize}
+    \item měřidlo 1 (nejmenší dílek 1\,mm) -- k měření $x$, $y$
+    \item měřidlo 2 (nejmenší dílek 10\,$\mu$m)
+    \item multimetr ESCORT 179 -- k měření napětí (přesnost $U_\mathrm{B} = \pm (x\,\%\;of\;reading\;+\;count)$ pro rozsah XX, vstupní odpor $R_\mathrm{V} = 1\,G\Omega$)
+\end{itemize}
+
+\section{Výsledky měření}
+Uveďte nejprve přímá měření se zpracováním, pak výsledky nepřímo měřených veličin. Není-li měření mnoho, uvádějte přímo naměřené hodnoty ve formě tabulek. Výsledky měření veličin s~velkým počtem měřených hodnot dokumentujte formou grafu. 
+
+\subsection{Měření geometrických rozměrů a hmotnosti tělesa}
+Naměřené hodnoty jsou spolu s aritmetickým průměrem a nejistotami uvedeny v~tabulce \ref{tb:mer}.
+
+Při popisování výsledků měření uvádějte hodnoty, nejistoty a finální výsledky pospolu. Čtenář nejistotu těžko zhodnotí, má-li hodnotu uvedenou o stránku dříve.
+
+V prostředí Overleaf tabulku velmi snadno vytvoříme ve vizuálním editoru, kde stačí zmáčknout CTRL+V pro vložení tabulky ze schránky. Do schránky ji zkopírujeme z QtiPlotu, Excelu či OneNote.  
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{| r | r | r | r |}
+\hline
+i & x (cm) & y (cm) & z (cm) \\
+\hline\hline
+1 & 10,00 & 10,00 & 10,00 \\
+2 & 9,98 & 10,02 & 10,00 \\
+\vdots & \vdots & \vdots & \vdots \\
+\hline\hline
+$\bar{x}$ & 10,00 & 10,00 & 10,00\\\hline\hline
+$u_A$ & 0,04 & &\\\hline
+$u_B$ & 0,03 & &\\\hline
+$u_C$ & 0,05 & &\\\hline
+\end{tabular}
+\caption{Naměřené hodnoty...}
+\label{tb:mer}
+\end{table}
+
+Každé zpracování měření přímo měřené veličiny je vhodné zakončit výslednou hodnotou se standardní nejistotou
+\begin{center}
+\vsn{x}{10,000}{0,001}{mm}.
+\end{center}
+Standardní nejistota zcela postačuje, pokud nehodláme přímá měření porovnávat, např. s~tabulkovou hodnotou. Na druhé straně, pokud zpracováváme všechna měření se známou krajní nejistotou (např. elektrická měření s nejistotou typu B v úloze 2), ponecháme všechny nejistoty na krajní hladině spolehlivosti. Zápis s~rozšířenou nejistotou bude vypadat jinak 
+\begin{center}
+\vrn{x}{10,000}{0,003}{mm}{99,73}{30}.
+\end{center}
+
+
+\subsection{Výsledky ve formě grafu}
+Do složky se zdrojovým souborem LaTeXu (main.tex) nahrejte grafy vyexportované z QtiPlotu ve formátu pdf, či png. Formát pdf je vektorový (vhodný pro běžné grafy), formát png rastrový (pro složité grafy s hustými daty).  Obrázek vysázíte jako plovoucí pomocí prostředí figure. Pak je potřeba se na něj odkazovat takto: Velmi zajímavá závislost je na obr. \ref{fig:VA}.
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{VA.png} % nebo jmeno_podadresare/VA.png
+\end{center}
+\caption{VA charakteristika fiktivního rezistoru. Nebojte se zopakovat z hladkého textu to, co považujete při prohlížení obrázku důležité znát.}
+\label{fig:VA}
+\end{figure}
+
+\subsection{Stanovení nepřímo měřené veličiny}
+Veličinu $F$ jsme stanovili z přímých měření podle rovnice (\ref{eq:F}). 
+Pokud jsme pro výpočet nejistoty použili ZPN nebo odvozená pravidla, uvedeme odvozený vztah pro výpočet nejistoty před číselným dosazením: Nejistota měření veličiny $F$ byla stanovena ze vztahu
+\begin{eqnarray}
+ u(F) &=& \nonumber\\
+ &\ldots&
+ \end{eqnarray}
+ Pokud jsme použili pythonovský modul unceertainties, odkážeme se místo toho na kód v příloze: Nejistota veličiny $F$ byla spočtena pomocí modulu \textit{uncertainties} kódem uvedeným v příloze \ref{sc:zdrojak}.
+
+Výsledek měření se standardní nejistotou
+
+\begin{center}
+\vsn{F}{224}{1}{m$^{-3}$}.
+\end{center}
+
+Výsledek měření s rozšířenou nejistotou
+\begin{center}
+\vrn{F}{224}{4}{m$^{-3}$}{99,73}{9}
+\end{center}
+Relativní rozšířená nejistota je rovna 2 \%.
+%$D=( \pm )\,\text{cm} \quad (p=0{,}6827, \nu= 9)$\\[1em]
+%$l=2099(1)\,\text{dm}$\\
+
+Výsledek měření veličiny $F$ obvykle chceme srovnat s tabulkovou hodnotou, případně s jiným měřením -- rozšířenou nejistotu pro hladinu spolehlivosti 99,73\,\% zde tedy potřebujeme.
+
+\section{Závěr}
+Známá hodnota pro $F$ (5 -- 8) m$^{-3}$ \cite{tabulky} leží v intervalu daném krajní nejistotou, měření lze proto považovat za správné.  Relativní rozšířená nejistota měření $F$ na stejné hladině byla stanovena na 1\,\%, což je obvyklá přesnost tohoto typu měření. Nejhůře byla změřena veličina... (relativní nejistota XX~\%). Měření by bylo možné vylepšit ...
+
+Protokol by měl být psán odborným stylem. Před odevzdáním protokolu proveďte kontrolu pravopisu a typografie. Pomůže Vám i automatická kontrola pravopisu, v  Overleafu kontrolu pravopisu pro český jazyk nastavíte v konfiguračním okně Menu (vlevo nahoře).
+
+% odkazy není vhodné uvádět v textu, ale odkazovat na seznam na konci dokumentu
+\begin{thebibliography}{0}
+\bibitem{navody} Bochníček a kol. \textit{Fyzikální praktikum 1, návody k ulohám.} Brno 2024.\\ Dostupné z~\url{https://monoceros.physics.muni.cz/kof/vyuka/fp1_skripta.pdf}.   
+\bibitem{tabulky} Hustota pevných látek. Dostupné z~\url{http://www.converter.cz/tabulky/hustota-pevne.htmf}.   
+\end{thebibliography}
+
+% Nakonec nezapomeňte projet text programem vlna nebo vlnka, např.
+% 	vlna -m -l -n mojeuloha.tex
+% nebo zkontrolovat a opravit jednopísmenné předložky na koncích řádků ručně.
+
+\newpage\appendix
+\section{Výpis zdrojového kódu}\label{sc:zdrojkod}
+% Protokol může mít přílohy, např. výpis skriptu počítající nejistoty. Ten může být výhodně vložen přímo ze souboru, nebo jako text mezi \begin{lstlisting} a \end{lstlisting}  
+\lstinputlisting{demo_uncertainties_template.py}
+\end{document}
