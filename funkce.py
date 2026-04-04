@@ -13,7 +13,7 @@ sheet_id = "SPREADSHEET_ID"
 gid = "0"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 
-df = pd.read_csv(url)
+#df = pd.read_csv(url)
 
 
 # nejistota typu A 
