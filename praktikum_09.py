@@ -9,7 +9,7 @@ from scipy import stats
 
 # funkce na Studentuv koeficient
 def StudCoef(confidence, dof): 
-    """
+    '''
     Parametry
     confidence : float
         hladina spolehlivosti, typicke hodnoty 0.683, 0.9973;
@@ -17,13 +17,13 @@ def StudCoef(confidence, dof):
         pocet stupnu volnosti, pro jednoduchou statistiku array.size-1
     Returns : float
     Studentuv koeficient pro danou hladinu spolehlivosti a pocet stupnu volnosti
-    """
+    '''
     alpha = 1 - confidence
     return stats.t.ppf(1 - alpha/2, dof)
 
 # nejistoty typu B pro digitalni pristroje
 def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi byt ve spravnych jednotkach; funguje pouze pro jedny podminky zaroven
-    """
+    '''
     Vypocet nejistoty typu B pro digitalni mereni (ponechame krajni)
 
     reading : float nebo array
@@ -34,7 +34,7 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
         pocet digitu
     resolution : float
         nejmensi dilek
-    """
+    '''
 
     max_error = abs(reading) * (percent_reading/100) + digits * resolution  # max_error -- krajni nejistota
     u_B = max_error / 3
@@ -42,9 +42,9 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
     return u_B
 
 # nacteni google tabulek
-sheet_id = "1fWm_pEDu0Hblxh12eK3tPYXtQ9wCVlQNpoaQT7EcBMM"
-gid = "0"
-url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+sheet_id = '1fWm_pEDu0Hblxh12eK3tPYXtQ9wCVlQNpoaQT7EcBMM'
+gid = '0'
+url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
 df_analog = pd.read_csv(url)
 
 
@@ -72,4 +72,28 @@ print('Velikosti předřadníků jsou: 49000 a 99500')
 
 # digitalni cast
 
-#
+# nacteni google tabulek
+sheet_id = '1fWm_pEDu0Hblxh12eK3tPYXtQ9wCVlQNpoaQT7EcBMM'
+gid = '1500912534'
+url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
+df_digital = pd.read_csv(url)
+
+# realny napetovy rozsah
+Ur12 = df_digital.loc[0,'um12'] - df_digital.loc[0,'u012']
+Uq12 = Ur12 /(2**12 - 1)
+print(f'Reálný rozsah 12-ti bitového převodníku je: {Ur12}')
+print(f'Reálný kvantizační krok 12-ti bitového převodníku je: {Uq12}')
+Ur16 = df_digital.loc[0,'um16'] - df_digital.loc[0,'u016']
+Uq16 = Ur16 /(2**16 - 1)
+print(f'Reálný rozsah 16-ti bitového převodníku je: {Ur16}')
+print(f'Reálný kvantizační krok 16-ti bitového převodníku je: {Uq16}')
+
+# chyba offsetu a měřítka
+deltaU0 = df_digital.loc[0,'u012'] - (1/(2**12 - 1))
+deltaUm = df_digital.loc[0,'um12'] - 5
+
+delta0 = deltaU0 / Ur12
+deltam = (deltaUm - delta0) / Ur12
+
+print(f'Chyba offsetu je: {delta0}')
+print(f'Chyba měřítka je: {deltam}')
