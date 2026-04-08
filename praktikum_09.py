@@ -84,7 +84,7 @@ Uq12 = Ur12 /(2**12 - 1)
 print(f'Reálný rozsah 12-ti bitového převodníku je: {Ur12}')
 print(f'Reálný kvantizační krok 12-ti bitového převodníku je: {Uq12}')
 Ur16 = df_digital.loc[0,'um16'] - df_digital.loc[0,'u016']
-Uq16 = Ur16 /(2**16 - 1)
+Uq16 = (2*Ur16)/(2**16 - 1)
 print(f'Reálný rozsah 16-ti bitového převodníku je: {Ur16}')
 print(f'Reálný kvantizační krok 16-ti bitového převodníku je: {Uq16}')
 
