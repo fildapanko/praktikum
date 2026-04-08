@@ -144,20 +144,21 @@ def fit_lin_plot(df, column, barva):
 
     values.append(abs(A*1e-3))
     errors.append(abs(A_u*1e-3))
+    m = A
+    n= b
 
     A = uf(A, A_u)
     b = uf(b, b_u)
 
     U_fit = np.linspace(1, len(col), 100)
-    ax.plot(U_fit, linear_model(U_fit, *popt), label=fr"Lineární fit: $\lambda / 2$ = {A:.1uPL} $mm$", color=f"{barva}")
+    ax.plot(U_fit, linear_model(U_fit, *popt), label=f"Lineární fit (Ax+b):\nA = {m}", color=f"{barva}")
 
 
 
 # graf hodnot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.set_title("Poloha maxim $D_i$", fontsize=25, pad=15)
 ax.set_xlabel(fr"$i$", fontsize=20)
-ax.set_ylabel(fr"$D (mm)$", fontsize=20)
+ax.set_ylabel(fr"$D\,(mm)$", fontsize=20)
 ax.scatter(df_zvuk.index+1, df_zvuk["f840"],marker="o",label="Frekvence 840 $Hz$", color="blue", s=100)
 ax.scatter(df_zvuk.index+1, df_zvuk["f995"],marker="o",label="Frekvence 995 $Hz$", color="red", s=100)
 ax.scatter(df_zvuk.index+1, df_zvuk["f1095"],marker="o",label="Frekvence 1095 $Hz$", color="green", s=100)
@@ -172,8 +173,8 @@ fit_lin_plot(df_zvuk, 'f995', "#D55E00")
 fit_lin_plot(df_zvuk, 'f1095', '#009E73')
 fit_lin_plot(df_zvuk, 'f1255', '#CC79A7')
 
-ax.legend(fontsize=15)
-#plt.savefig(r"C:\Users\Admin\Downloads\lambdapul.png", dpi=300)
+ax.legend(fontsize=13)
+plt.savefig(r"C:\Users\Admin\Downloads\lambdapul.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
