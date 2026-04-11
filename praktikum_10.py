@@ -27,13 +27,13 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
 
 # nejistota typu B u cteni z nejmensiho dilku
 def unc_B_cteni(a):
-    """
+    '''
     Nejistota typu B pro napr pravitko
     data : float
         nejmensi dilek
     return : float
         nejistota typu B
-    """
+    '''
     u_B = a/(3**0.5)
     return u_B
 
@@ -45,8 +45,8 @@ df_vedeni = pd.read_csv(url)
 
 # graf
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.set_xlabel(fr"$t\,(s)$", fontsize=20)
-ax.set_ylabel(fr"$U\,(V)$", fontsize=20)
+ax.set_xlabel(fr'$t\,(s)$', fontsize=20)
+ax.set_ylabel(fr'$U\,(V)$', fontsize=20)
 ax.plot(df_vedeni['t'], df_vedeni['a'], label='1. čidlo', color='blue')
 ax.plot(df_vedeni['t'], df_vedeni['b'], label='2. čidlo', color='red')
 ax.plot(df_vedeni['t'], df_vedeni['c'], label='3. čidlo', color='green')
@@ -55,7 +55,7 @@ ax.plot(df_vedeni['t'], df_vedeni['e'], label='5. čidlo', color='purple')
 ax.tick_params(labelsize=15)
 ax.grid(True, alpha=0.7)
 ax.legend(fontsize=15)
-plt.savefig(r"C:\Users\Admin\Downloads\termoclanky.png", dpi=300, bbox_inches='tight')
+plt.savefig(r'C:\Users\Admin\Downloads\termoclanky.png', dpi=300, bbox_inches='tight')
 
 # lambda
 a = 2.5780594
