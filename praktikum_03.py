@@ -107,12 +107,11 @@ print(f'Povrchové napětí lihu je: {sigmalih:.1uPL}')
 print(f'Povrchové napětí vody je: {sigmavoda:.1uPL}')
 
 # ubbelohde
-K = uf(1.063, 1.063*0.0065)
 teplota = np.array([22.8, 31.4, 39.2])
 rhodest = np.array([997.59, 995.2, 992.51])
 casy = np.array([896, 749, 655])
 
-etadest = (1.063*1e-3*casy)/rhodest
+etadest = (1.063*1e-9*casy)*rhodest
 
 teploty = np.linspace(0, 60, 1000) + 273.15
 funkce_viskozity = 100/(2.20065*(teploty-282.92341+(8761.27+(teploty-282.92341)**2)**0.5)-129.908)
