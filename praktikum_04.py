@@ -90,3 +90,13 @@ delka = uf(98.9*1e-2, 0.0001)
 
 g = (4*np.pi**2 * delka)/(T0**2)
 print(f'Graviační zrychlení je: {g:.2uPL}')
+
+# cavendish
+
+# nacteni google tabulek
+sheet_id = '10z04lpi1SJIW4qjCqTtfem1v3yCMArCQSHEY15_5Krw'
+gid = '691835700'
+url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
+df_cavendish = pd.read_csv(url)
+
+#
