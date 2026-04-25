@@ -59,7 +59,7 @@ ax.plot(z_fit1, polynom_model(z_fit1, *popt1), label='Fit polynomem ($ax^2+bx+c$
 ax.plot(z_fit2, polynom_model(z_fit2, *popt2), label='Fit polynomem ($ax^2+bx+c$)', color='orange')
 
 for x, y in intersections:
-    ax.scatter(x, y, marker='x', color='green', s=200)
+    ax.scatter(x, y, marker='x', color='green', s=200, label='Průsečík')
     ax.annotate(
         f"({x:.3f}, {y:.3f})",
         (x, y),
@@ -93,10 +93,62 @@ print(f'Graviační zrychlení je: {g:.2uPL}')
 
 # cavendish
 
-# nacteni google tabulek
-sheet_id = '10z04lpi1SJIW4qjCqTtfem1v3yCMArCQSHEY15_5Krw'
-gid = '691835700'
-url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
-df_cavendish = pd.read_csv(url)
+# nacteni dat
+df_jedna = pd.read_csv(
+    "cavendish_machacek_jedna.txt",
+    sep="\s+",
+    header=None
+)
+df_jedna.columns = ["t", "x"]
 
-#
+df_dva = pd.read_csv(
+    "cavendish_machacek_dva.txt",
+    sep="\s+",
+    header=None
+)
+df_dva.columns = ["t", "x"]
+
+t1 = df_jedna['t']
+x1 = df_jedna['x']
+
+t2 = df_dva['t']
+x2 = df_dva['x']
+
+# graf
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.scatter((t1-1)/30, x1, marker='.', s=100, label='', color='blue')
+ax.scatter((t2-1)/30, x2, marker='.', s=100, label='', color='red')
+
+ax.set_xlabel(r'$t\,(s)$', fontsize=20)
+ax.set_ylabel(r'$x\,(pixel)$', fontsize=20)
+ax.grid(True, alpha=0.7)
+ax.legend(fontsize=15)
+ax.tick_params(labelsize=15)
+
+plt.savefig(r'C:\Users\Admin\Downloads\lasernamereno.png', dpi=300, bbox_inches='tight')
+
+# fit
+def damped_osc(t, A, gamma, omega, phi, x0):
+    return A * np.exp(-gamma * t) * np.cos(omega * t + phi) + x0
+
+A0 = (max(x1) - min(x1)) / 2
+y0_0 = np.mean(x1)
+gamma0 = 1e-4
+omega0 = 2*np.pi / (t1[10] - t1[0])  # hrubý odhad
+phi0 = 0
+
+p0 = [A0, gamma0, omega0, phi0, y0_0]
+
+popt, pcov = curve_fit(damped_osc, t1, x1, p0=p0)
+A, gamma, omega, phi, x0 = popt
+
+t_fit = np.linspace(min(t1), max(t1), 1000)
+
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.scatter(t1, x1, s=10, label="data")
+ax.plot(t_fit, damped_osc(t_fit, *popt), color="red", label="fit")
+ax.axhline(x0, linestyle='--', color='black', label='rovnovážná poloha')
+
+ax.legend()
+ax.grid()
+plt.savefig(r'C:\Users\Admin\Downloads\laserfit.png', dpi=300, bbox_inches='tight')
