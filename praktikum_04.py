@@ -61,7 +61,7 @@ ax.plot(z_fit2, polynom_model(z_fit2, *popt2), label='Fit polynomem ($ax^2+bx+c$
 for x, y in intersections:
     ax.scatter(x, y, marker='x', color='green', s=200, label='Průsečík')
     ax.annotate(
-        f"({x:.3f}, {y:.3f})",
+        f'({x:.3f}, {y:.3f})',
         (x, y),
         xytext=(8, -15),
         textcoords='offset points'
@@ -85,41 +85,42 @@ x1 = (-B + D**0.5) / (2*A)
 x2 = (-B - D**0.5) / (2*A)
 
 T0 = a1*x1**2 + b1*x1 + c1
+T0alt = uf(1.99730, 0.00100)
 
 delka = uf(98.9*1e-2, 0.0001)
 
-g = (4*np.pi**2 * delka)/(T0**2)
-print(f'Graviační zrychlení je: {g:.2uPL}')
+g = (4*np.pi**2 * delka)/(T0alt**2)
+print(f'Graviační zrychlení je: {g:.1uPL}')
 
 # cavendish
 
 # nacteni dat
 df_jedna = pd.read_csv(
-    "cavendish_machacek_jedna.txt",
-    sep="\s+",
+    'cavendish_machacek_jedna.txt',
+    sep='\s+',
     header=None
 )
-df_jedna.columns = ["t", "x"]
+df_jedna.columns = ['t', 'x']
 
 df_dva = pd.read_csv(
-    "cavendish_machacek_dva.txt",
-    sep="\s+",
+    'cavendish_machacek_dva.txt',
+    sep='\s+',
     header=None
 )
-df_dva.columns = ["t", "x"]
+df_dva.columns = ['t', 'x']
 
-t1 = df_jedna['t']
+t1 = (df_jedna['t']-1)/30
 x1 = df_jedna['x']
 
-t2 = df_dva['t']
+t2 = (df_dva['t']-1)/30
 x2 = df_dva['x']
 
 # graf
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter((t1-1)/30, x1, marker='.', s=100, label='', color='blue')
-ax.scatter((t2-1)/30, x2, marker='.', s=100, label='', color='red')
+ax.scatter(t1*30, x1, marker='.', s=100, label='', color='blue')
+ax.scatter(t2*30, x2, marker='.', s=100, label='', color='red')
 
-ax.set_xlabel(r'$t\,(s)$', fontsize=20)
+ax.set_xlabel(r'$t\,(snímek)$', fontsize=20)
 ax.set_ylabel(r'$x\,(pixel)$', fontsize=20)
 ax.grid(True, alpha=0.7)
 ax.legend(fontsize=15)
@@ -131,24 +132,56 @@ plt.savefig(r'C:\Users\Admin\Downloads\lasernamereno.png', dpi=300, bbox_inches=
 def damped_osc(t, A, gamma, omega, phi, x0):
     return A * np.exp(-gamma * t) * np.cos(omega * t + phi) + x0
 
-A0 = (max(x1) - min(x1)) / 2
-y0_0 = np.mean(x1)
-gamma0 = 1e-4
-omega0 = 2*np.pi / (t1[10] - t1[0])  # hrubý odhad
-phi0 = 0
+def fit_osc(t, x):
+    A0 = (max(x) - min(x)) / 2
+    y0_0 = np.mean(x)
+    gamma0 = 1e-4
+    omega0 = 2*np.pi / (t[10] - t[0])  # hrubý odhad
+    phi0 = 0
+    p0 = [A0, gamma0, omega0, phi0, y0_0]
 
-p0 = [A0, gamma0, omega0, phi0, y0_0]
+    popt, pcov = curve_fit(damped_osc, t, x, p0=p0)
+    err = np.sqrt(np.diag(pcov))
+    return popt, err
 
-popt, pcov = curve_fit(damped_osc, t1, x1, p0=p0)
-A, gamma, omega, phi, x0 = popt
+popt1, err1 = fit_osc(t1, x1)
+_, _, omega1, _, x01 = popt1
+omega1 = uf(omega1, err1[2])
+popt2, err2 = fit_osc(t2, x2)
+_, _, omega2, _, x02 = popt2
+omega2 = uf(omega2, err2[2])
 
-t_fit = np.linspace(min(t1), max(t1), 1000)
+t1_fit = np.linspace(min(t1), max(t1), 1000)
+t2_fit = np.linspace(min(t2), max(t2), 1000)
 
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter(t1, x1, s=10, label="data")
-ax.plot(t_fit, damped_osc(t_fit, *popt), color="red", label="fit")
-ax.axhline(x0, linestyle='--', color='black', label='rovnovážná poloha')
+ax.scatter(t1, x1, s=10, label='Naměřené hodnoty', color='red')
+ax.plot(t1_fit, damped_osc(t1_fit, *popt1), color='orange', label='Fit: tlumené kmity', ls='--')
+ax.axhline(x01, linestyle=':', color='black', label='Rovnovážná poloha')
 
-ax.legend()
-ax.grid()
+ax.scatter(t2, x2, s=10, label='Naměřené hodnoty', color='blue')
+ax.plot(t2_fit, damped_osc(t2_fit, *popt2), color='cyan', label='Fit: tlumené kmity', ls='--')
+ax.axhline(x02, linestyle=':', color='black', label='Rovnovážná poloha')
+
+ax.set_xlabel(r'$t\,(s)$', fontsize=20)
+ax.set_ylabel(r'$x\,(cm)$', fontsize=20)
+ax.grid(True, alpha=0.7)
+ax.legend(fontsize=15)
+ax.tick_params(labelsize=15)
+
 plt.savefig(r'C:\Users\Admin\Downloads\laserfit.png', dpi=300, bbox_inches='tight')
+
+mass = uf(38.3*1e-3, 0.2*1e-3) # hmotnost kulicek
+Mass = 1.5 # hmotnost kouli
+rad = 8.19*1e-3 # polomer kulicek
+Rad = 46.5*1e-3 # vzdalenost stredu kouli od teziste kulicek
+dist = 50*1e-3 # vzdalenost kouli
+
+setr = 2*mass*(0.4*rad**2+dist**2)
+
+dirmom = setr*omega1**2
+
+mgrav = 0.5*dirmom*1 #(-x01+x02)
+
+kappa = 0.5*mgrav/((Mass*mass)*dist*((1/Rad**2)-(Rad/((4*dist**2 + Rad**2)**1.5))))
+print(f'Gravitační konstanta je: {kappa}')
