@@ -128,6 +128,11 @@ ax.tick_params(labelsize=15)
 
 plt.savefig(r'C:\Users\Admin\Downloads\lasernamereno.png', dpi=300, bbox_inches='tight')
 
+
+x1 = df_jedna['x']*1.54
+x2 = df_dva['x']*1.54
+
+
 # fit
 def damped_osc(t, A, gamma, omega, phi, x0):
     return A * np.exp(-gamma * t) * np.cos(omega * t + phi) + x0
@@ -164,7 +169,7 @@ ax.plot(t2_fit, damped_osc(t2_fit, *popt2), color='cyan', label='Fit: tlumené k
 ax.axhline(x02, linestyle=':', color='black', label='Rovnovážná poloha')
 
 ax.set_xlabel(r'$t\,(s)$', fontsize=20)
-ax.set_ylabel(r'$x\,(cm)$', fontsize=20)
+ax.set_ylabel(r'$x\,(mm)$', fontsize=20)
 ax.grid(True, alpha=0.7)
 ax.legend(fontsize=15)
 ax.tick_params(labelsize=15)
@@ -181,7 +186,7 @@ setr = 2*mass*(0.4*rad**2+dist**2)
 
 dirmom = setr*omega1**2
 
-mgrav = 0.5*dirmom*1 #(-x01+x02)
+mgrav = 0.5*dirmom*(-x01+x02)*1e-3
 
 kappa = 0.5*mgrav/((Mass*mass)*dist*((1/Rad**2)-(Rad/((4*dist**2 + Rad**2)**1.5))))
 print(f'Gravitační konstanta je: {kappa}')
