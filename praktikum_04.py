@@ -89,7 +89,7 @@ T0alt = uf(1.99730, 0.00100)
 
 delka = uf(98.9*1e-2, 0.0001)
 
-g = (4*np.pi**2 * delka)/(T0alt**2)
+g = (4*np.pi**2 * delka)/(T0**2)
 print(f'Graviační zrychlení je: {g:.1uPL}')
 
 # cavendish
@@ -117,8 +117,8 @@ x2 = df_dva['x']
 
 # graf
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter(t1*30, x1, marker='.', s=100, label='', color='blue')
-ax.scatter(t2*30, x2, marker='.', s=100, label='', color='red')
+ax.scatter(t1*30, x1, marker='.', s=100, label='', color='red')
+ax.scatter(t2*30, x2, marker='.', s=100, label='', color='blue')
 
 ax.set_xlabel(r'$t\,(snímek)$', fontsize=20)
 ax.set_ylabel(r'$x\,(pixel)$', fontsize=20)
@@ -128,9 +128,18 @@ ax.tick_params(labelsize=15)
 
 plt.savefig(r'C:\Users\Admin\Downloads\lasernamereno.png', dpi=300, bbox_inches='tight')
 
+# prepocet
+x01 = 813
+x02 = 194
+y01 = 1386
+y02 = 230
 
-x1 = df_jedna['x']*1.54
-x2 = df_dva['x']*1.54
+delka_pixelu = ((x01-y01)**2 + (x02-y02)**2 )**0.5
+
+prepocet = 500/delka_pixelu
+
+x1 = df_jedna['x']*prepocet
+x2 = df_dva['x']*prepocet
 
 
 # fit
@@ -181,12 +190,15 @@ Mass = 1.5 # hmotnost kouli
 rad = 8.19*1e-3 # polomer kulicek
 Rad = 46.5*1e-3 # vzdalenost stredu kouli od teziste kulicek
 dist = 50*1e-3 # vzdalenost kouli
+stena = uf(5.280, 0.003)
 
 setr = 2*mass*(0.4*rad**2+dist**2)
 
 dirmom = setr*omega1**2
 
-mgrav = 0.5*dirmom*(-x01+x02)*1e-3
+rozdil_phi = ((-x01+x02)*1e-3)/(2*stena)
+
+mgrav = 0.5*dirmom*rozdil_phi
 
 kappa = 0.5*mgrav/((Mass*mass)*dist*((1/Rad**2)-(Rad/((4*dist**2 + Rad**2)**1.5))))
-print(f'Gravitační konstanta je: {kappa}')
+print(f'Gravitační konstanta je: {kappa:.1uPL}')
