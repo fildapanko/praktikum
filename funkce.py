@@ -7,6 +7,7 @@ from scipy.optimize import curve_fit
 from scipy import stats
 from uncertainties import unumpy as unp
 
+T0alt = uf(1.99730, 0.00100)
 
 # nacteni google tabulek
 sheet_id = "SPREADSHEET_ID"
