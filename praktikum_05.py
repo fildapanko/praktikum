@@ -191,7 +191,7 @@ fig, ax = plt.subplots(2, 3, figsize=(16, 9), sharex='col', sharey='row')
 # nastavení mezer
 fig.subplots_adjust(hspace=0,  wspace=0.1) # spojení vertikálně # mezera mezi sloupci
 
-ax[0,0].set_title("Dural", fontsize=20, pad=10)
+ax[0,0].set_title("Deska 1", fontsize=20, pad=10)
 ax[0,0].scatter(m, dolu_d, marker='.', s=100, label='Naměřené hodnoty – přidávání závaží', color='blue')
 ax[0,0].plot(lnspace1_d, lin_model(lnspace1_d, *popt1_d), label=f'Lineární fit: k = {a1_d:.1uPL}', color='cyan')
 ax[1,0].scatter(m, nahoru_d, marker='.', s=100, label='Naměřené hodnoty – oddělávání závaží', color='red')
@@ -201,14 +201,14 @@ ax[1,0].set_xlabel(r'$m\,(g)$', fontsize=15)
 ax[0,0].set_ylabel(r'$\Delta l\,(mm)$', fontsize=15)
 ax[1,0].set_ylabel(r'$\Delta l\,(mm)$', fontsize=15)
 
-ax[0,1].set_title("Mosaz", fontsize=20, pad=10)
+ax[0,1].set_title("Deska 2", fontsize=20, pad=10)
 ax[0,1].scatter(m, dolu_z, marker='.', s=100, label='Naměřené hodnoty – přidávání závaží', color='blue')
 ax[0,1].plot(lnspace1_z, lin_model(lnspace1_z, *popt1_z), label=f'Lineární fit: k = {a1_z:.1uPL}', color='cyan')
 ax[1,1].scatter(m, nahoru_z, marker='.', s=100, label='Naměřené hodnoty – oddělávání závaží', color='red')
 ax[1,1].plot(lnspace2_z, lin_model(lnspace2_z, *popt2_z), label=f'Lineární fit: k = {a2_z:.1uPL}', color='orange')
 ax[1,1].set_xlabel(r'$m\,(g)$', fontsize=15)
 
-ax[0,2].set_title("Měď", fontsize=20, pad=10)
+ax[0,2].set_title("Deska 3", fontsize=20, pad=10)
 ax[0,2].scatter(m, dolu_m, marker='.', s=100, label='Naměřené hodnoty – přidávání závaží', color='blue')
 ax[0,2].plot(lnspace1_m, lin_model(lnspace1_m, *popt1_m), label=f'Lineární fit: k = {a1_m:.1uPL}', color='cyan')
 ax[1,2].scatter(m, nahoru_m, marker='.', s=100, label='Naměřené hodnoty – oddělávání závaží', color='red')
