@@ -15,19 +15,19 @@ df_kap = pd.read_csv(url)
 studena_k = df_kap.loc[0,'studena']
 kalorimetr = df_kap.loc[0,'kalorimetr']
 studena = uf(studena_k - kalorimetr, 0.1)*1e-3
-print(f'Hmotnost studené vody je: {studena:.2uPL}')
+print(f'Hmotnost studené vody je: {studena:.1uPL}')
 
 tepla_n = df_kap.loc[0,'tepla']
 nadoba = df_kap.loc[0,'nadoba']
 tepla = uf(tepla_n - nadoba, 0.1)*1e-3
-print(f'Hmotnost teplé vody je: {tepla:.2uPL}')
+print(f'Hmotnost teplé vody je: {tepla:.1uPL}')
 
 ts = uf(df_kap.loc[0,'ts'], 0.1)
 tt = uf(df_kap.loc[0,'tt'], 0.1)
 t = uf(df_kap.loc[0,'t'], 0.1)
 
 kappa = tepla*((tt-t)/(t-ts))-studena
-print(f'Redukovaná kapacita je: {kappa:.2uPL}')
+print(f'Redukovaná kapacita je: {kappa:.1uPL}')
 
 # nacteni google tabulek
 sheet_id = '1h2iV1PbB3VpKC6OpQwYhCfeMAKmC3iLTg9_OAIoH-6E'
@@ -39,7 +39,7 @@ p = df_vykon.loc[0,'p']
 tr = uf(df_vykon.loc[0,'tr'], 0.1)
 to = uf(df_vykon.loc[0,'to'], 0.1)
 beta = (p)/(tr-to)
-print(f'Koeficient chladnutí je: {beta:.2uPL}')
+print(f'Koeficient chladnutí je: {beta:.PL}')
 
 
 # nacteni google tabulek
@@ -84,7 +84,8 @@ _, _, T = popt
 _, _, unc_T = np.sqrt(np.diag(pcov))
 T = uf(T, unc_T)
 gamma = T*(m+kappa)
-print(f'Redukovaný koeficient je: {gamma:.2uPL}')
+print(f'Redukovaný koeficient je: {gamma:.1uPL}')
+print(f'Jako zkouška: {4180*gamma:.1uPL}')
 
 t_fit = np.linspace(min(tau), max(tau), 1000)
 
