@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from uncertainties import ufloat as uf
 from scipy.optimize import curve_fit
-from uncertainties.umath import fabs
 
 # nacteni google tabulek
 sheet_id = '10z04lpi1SJIW4qjCqTtfem1v3yCMArCQSHEY15_5Krw'
@@ -51,7 +50,7 @@ T0 = a1*x1**2 + b1*x1 + c1
 delka = uf(0.9890, 0.0001)
 
 g = (4*np.pi**2 * delka)/(T0**2)
-print(f'Graviační zrychlení je: {g:.1uPL}')
+print(f'Gravitační zrychlení je: {g:.1uPL}')
 
 # graf a fit
 fig, ax = plt.subplots(figsize=(16, 9))
