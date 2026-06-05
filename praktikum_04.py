@@ -178,3 +178,6 @@ mgrav = 0.5*dirmom*rozdil_phi # moment gravitacni sily
 
 kappa = 0.5*mgrav/((Mass*mass)*dist*((1/Rad**2)-(Rad/((4*dist**2 + Rad**2)**1.5)))) # vysledek
 print(f'Gravitační konstanta je: {kappa:.1uPL}')
+
+
+# doplnit vzpocet pruseciku pro gravitacni zrychleni
