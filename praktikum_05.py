@@ -260,6 +260,3 @@ d = uf(np.mean(d), (unc_A(d)**2 + unc_B_cteni(1e-5)**2)**0.5)
 modul_koule = (64 * np.pi * mass * D**2 * l)/(5 * d**4 * T**2)
 modul_koule = kraj_unc(modul_koule)
 print(f'Modul pružnosti ve smyku je: {modul_koule:.1uPL}')
-
-# prendat prumer dratu jinam z tabulky
-
