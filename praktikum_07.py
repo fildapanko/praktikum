@@ -73,14 +73,15 @@ df_tlaky = pd.read_csv(url)
 p1 = np.array(df_tlaky['p1'])
 p2 = np.array(df_tlaky['p2'])
 
-u_p1 = np.array(unc_B_digital(df_tlaky['p1'], 0.3, 0, 1)) 
-u_p2 = np.array(unc_B_digital(df_tlaky['p2'], 0.3, 0, 1))
+u_p1 = 15  # !!!! fuj, kdo napsal ten navod anglicky proklinam ho !!!!
+u_p2 = 15
 
 p0_u = uf(99270, 30)
+p0 = 99270
 p1_u = unp.uarray(p1, u_p1)
 p2_u = unp.uarray(p2, u_p2)
 
-kappa = p1_u/(p1_u - p2_u)
+kappa_tlak = p1_u/(p1_u - p2_u)
 
 
 # funkce na vazeny prumer
@@ -93,12 +94,17 @@ def weight_average(hodnota): # krajni
     unc = unc * StudCoef(0.9973, 9)
     return uf(mean, unc)
 
-kappa_u = weight_average(kappa)
-print(f'Kappa z rozvoje a tlaku je: {kappa_u:.1u}')
+#kappa_u = weight_average(kappa)
+print(f'Kappa z rozvoje a tlaku je: {[f'{x:.3f}' for x in kappa_tlak]}')
 
-kappa = (unp.log((p1_u+p0_u)/p0_u)) / (unp.log((p1_u+p0_u)/(p2_u+p0_u)))
-kappa_u = weight_average(kappa)
-print(f'Kappa z plneho vypoctu je: {kappa_u:.1u}')
+# Pokud je pole malé, můžete to vypsat takto:
+#print(f"Výsledky jsou: {[f'{x:.5f}' for x in arr]}")
+
+
+kappa_pln = (unp.log((p1_u+p0_u)/p0_u)) / (unp.log((p1_u+p0_u)/(p2_u+p0_u)))
+#kappa_u = weight_average(kappa)
+print(f'Kappa z plneho vypoctu je: {[f'{x:.3f}' for x in kappa_pln]}')
+
 
 
 # u trubice
@@ -111,9 +117,9 @@ u_h2 = np.array(unc_B_cteni(1))
 h1_u = unp.uarray(h1, u_h1)
 h2_u = unp.uarray(h2, u_h2)
 
-kappa = h1_u/(h1_u - h2_u)
-kappa_u = weight_average(kappa)
-print(f'Kappa z rozvoje a U trubice je: {kappa_u:.1u}')
+kappa_trub = h1_u/(h1_u - h2_u)
+#kappa_u = weight_average(kappa)
+print(f'Kappa z rozvoje a U trubice je: {[f'{x:.3f}' for x in kappa_trub]}')
 
 
 
@@ -145,14 +151,13 @@ def fit_lin_plot(df, column, barva):
     values.append(abs(A*1e-3))
     errors.append(abs(A_u*1e-3))
     m = A
-    n= b
+    n = b
 
     A = uf(A, A_u)
     b = uf(b, b_u)
 
     U_fit = np.linspace(1, len(col), 100)
-    ax.plot(U_fit, linear_model(U_fit, *popt), label=f"Lineární fit (Ax+b):\nA = {m}", color=f"{barva}")
-
+    ax.plot(U_fit, linear_model(U_fit, *popt), label=f"Lineární fit (Ax+b):\n$A = {A:.2uPL}$", color=f"{barva}")
 
 
 # graf hodnot
@@ -175,7 +180,6 @@ fit_lin_plot(df_zvuk, 'f1255', '#CC79A7')
 
 ax.legend(fontsize=13)
 plt.savefig(r"C:\Users\Admin\Downloads\lambdapul.png", dpi=300, bbox_inches='tight')
-plt.show()
 
 
 # vypocet kappy z fitu
@@ -193,4 +197,20 @@ unc = np.sqrt(1 / np.sum(weights))
 unc = unc * StudCoef(0.9973, 3)
 kappa_u = uf(mean, unc)
 
-print(f'Kappa z fitu je: {kappa_u:.1u}')
+print(f'Kappa z fitu je: {[f'{x:.3f}' for x in kappa]}')
+kappa_zvuk = kappa
+
+
+# prumery nominalnich hodnot
+
+p_kappa_tlak = np.mean(kappa_tlak)
+print(f'Průměr kappa tlaku je {p_kappa_tlak}')
+
+p_kappa_pln = np.mean(kappa_pln)
+print(f'Průměr kappa plný je {p_kappa_pln}')
+
+p_kappa_trub = np.mean(kappa_trub)
+print(f'Průměr kappa trubice je {p_kappa_trub}')
+
+p_kappa_zvuk = np.mean(kappa_zvuk)
+print(f'Průměr kappa zvuku je {p_kappa_zvuk}')
