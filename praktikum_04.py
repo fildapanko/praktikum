@@ -47,7 +47,7 @@ x1 = (-B + D**0.5) / (2*A)
 x2 = (-B - D**0.5) / (2*A)
 
 T0 = a1*x1**2 + b1*x1 + c1
-delka = uf(0.9890, 0.0001)
+delka = uf(0.9890, 0.0005)
 
 g = (4*np.pi**2 * delka)/(T0**2)
 print(f'Gravitační zrychlení je: {g:.1uPL}')
@@ -56,8 +56,8 @@ print(f'Gravitační zrychlení je: {g:.1uPL}')
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.scatter(df_kyvadlo['z1'], df_kyvadlo['T1'], marker='.', s=100, label='Naměřené hodnoty $T_1$', color='blue')
 ax.scatter(df_kyvadlo['z2'], df_kyvadlo['T2'], marker='.', s=100, label='Naměřené hodnoty $T_2$', color='red')
-ax.plot(z_fit1, polynom_model(z_fit1, *popt1), label='Fit polynomem ($ax^2+bx+c$)', color='cyan')
-ax.plot(z_fit2, polynom_model(z_fit2, *popt2), label='Fit polynomem ($ax^2+bx+c$)', color='orange')
+ax.plot(z_fit1, polynom_model(z_fit1, *popt1), label=f'První fit polynomem ($ax^2+bx+c$)\n$a_1={a1:.2uPL}$\n$b_1={b1:.2uPL}$\n$c_1={c1:.2uPL}$', color='cyan')
+ax.plot(z_fit2, polynom_model(z_fit2, *popt2), label=f'Druhý fit polynomem ($ax^2+bx+c$)\n$a_2={a2:.2uPL}$\n$b_2={b2:.2uPL}$\n$c_2={c2:.2uPL}$', color='orange')
 
 x1 = x1.n
 T0 = T0.n
@@ -70,6 +70,7 @@ ax.grid(True, alpha=0.7)
 ax.legend(fontsize=15)
 ax.tick_params(labelsize=15)
 plt.savefig(r'C:\Users\Admin\Downloads\kyvadlo.png', dpi=300, bbox_inches='tight')
+
 
 # cavendish
 
@@ -177,6 +178,3 @@ mgrav = 0.5*dirmom*rozdil_phi # moment gravitacni sily
 
 kappa = 0.5*mgrav/((Mass*mass)*dist*((1/Rad**2)-(Rad/((4*dist**2 + Rad**2)**1.5)))) # vysledek
 print(f'Gravitační konstanta je: {kappa:.1uPL}')
-
-
-# doplnit vzpocet pruseciku pro gravitacni zrychleni
