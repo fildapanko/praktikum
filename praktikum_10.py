@@ -46,7 +46,7 @@ df_vedeni = pd.read_csv(url)
 # graf
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.set_xlabel(fr'$t\,(s)$', fontsize=20)
-ax.set_ylabel(fr'$U\,(V)$', fontsize=20)
+ax.set_ylabel(fr'$U\,(mV)$', fontsize=20)
 ax.plot(df_vedeni['t'], df_vedeni['a'], label='1. čidlo', color='blue')
 ax.plot(df_vedeni['t'], df_vedeni['b'], label='2. čidlo', color='red')
 ax.plot(df_vedeni['t'], df_vedeni['c'], label='3. čidlo', color='green')
@@ -70,4 +70,10 @@ i = uf(0.374, unc_B_digital(0.374, 0.3, 3, 0.001))
 d = uf(0.01, unc_B_cteni(0.001))
 
 lambd = (u*i*4*l)/(np.pi*(d**2)*(t1-t2))
-print(f'Lambda je: {lambd:.1uPL}')
+#print(f'Lambda je: {lambd:.1uPL}')
+
+
+# oprava a dodelani praktika
+
+
+# 
