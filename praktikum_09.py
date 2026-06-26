@@ -65,9 +65,31 @@ print('Vnitřní odpor ampérmetru ze substituční metody je: 1580 +- ??')
 
 # bocniky
 print('Velikosti bočníků jsou: 400, 180, 85')
+def bocniky(num):
+    Rb = R/(num-1)
+    return Rb
+
+B_05 = bocniky(5)
+B_10 = bocniky(10)
+B_20 = bocniky(20)
+
+print(f'Vnitřní odpor bočníků 5x je: {B_05:.1uPL}')
+print(f'Vnitřní odpor bočníků 10x je: {B_10:.1uPL}')
+print(f'Vnitřní odpor bočníků 20x je: {B_20:.1uPL}')
+
 
 # predradniky
 print('Velikosti předřadníků jsou: 49000 a 99500')
+
+def predradniky(num):
+    Rpd = R*(num-1)
+    return Rpd
+
+Pd_31 = predradniky(5/U_unc)
+Pd_62 = predradniky(10/U_unc)
+
+print(f'Vnitřní odpor předřadníků 31x je: {Pd_31:.1uPL}')
+print(f'Vnitřní odpor předřadníků 62x je: {Pd_62:.1uPL}')
 
 
 # digitalni cast
