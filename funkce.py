@@ -95,6 +95,7 @@ def weight_average(hodnota): # hodnota : uarray
     unc = unc * StudCoef(0.9973, 9)
     return uf(mean, unc)
 
+# path config
 """
 import matplotlib.pyplot as plt
 from pathlib import Path
