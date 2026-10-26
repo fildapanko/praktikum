@@ -95,6 +95,34 @@ def weight_average(hodnota): # hodnota : uarray
     unc = unc * StudCoef(0.9973, 9)
     return uf(mean, unc)
 
+
+# nacteni z tabulky
+def nacteni_array(df, *list_data, dtype=float):
+    return tuple(df[v].dropna().to_numpy(dtype=dtype) for v in list_data)
+
+
+# nacteni z df do numpy
+def df_to_numpy(df, sloupce, dtype=float):
+    """
+    sloupce: jmeno sloupce (str) nebo seznam jmen (list[str])
+    """
+    if isinstance(sloupce, str):
+        sloupce = [sloupce]
+
+    chybejici = [s for s in sloupce if s not in df.columns]
+    if chybejici:
+        raise KeyError(f"Chybejici sloupce: {chybejici}")
+
+    data = df[sloupce].to_numpy(dtype=dtype)
+    return data[:, 0] if len(sloupce) == 1 else data
+
+
+# ufloat pro tuple
+def tuple_unc_A(*velicina):
+    list_velicin = [*velicina]
+    return tuple(uf(np.mean(v), unc_A(v)) for v in list_velicin)
+
+
 # path config
 """
 import matplotlib.pyplot as plt
