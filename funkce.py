@@ -7,13 +7,11 @@ from scipy.optimize import curve_fit
 from scipy import stats
 from uncertainties import unumpy as unp
 
-T0alt = uf(1.99730, 0.00100)
 
 # nacteni google tabulek
 sheet_id = "SPREADSHEET_ID"
 gid = "0"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
-
 #df = pd.read_csv(url)
 
 
@@ -35,7 +33,6 @@ def unc_A(data):
     return u_A
 
 
-
 # nejistoty typu B pro digitalni pristroje
 def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi byt ve spravnych jednotkach; funguje pouze pro jedny podminky zaroven
     """
@@ -50,7 +47,6 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
     resolution : float
         nejmensi dilek
     """
-
     max_error = abs(reading) * (percent_reading/100) + digits * resolution  # max_error -- krajni nejistota
     u_B = max_error
 
