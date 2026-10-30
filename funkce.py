@@ -120,9 +120,9 @@ def tuple_unc_A(*velicina):
 
 
 # array do latex
-def array_to_latex(array, dig=4, format='f'):
+def array_to_latex(*array, dig=4, format='f', style='L'):
     for u in array:
-        print(f'${u:.{dig}{format}L}$')
+        print(f'${u:.{dig}{format}{style}}$')
 
 
 # path config
