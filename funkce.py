@@ -119,6 +119,12 @@ def tuple_unc_A(*velicina):
     return tuple(uf(np.mean(v), unc_A(v)) for v in list_velicin)
 
 
+# array do latex
+def array_to_latex(array, dig=4, format='f'):
+    for u in array:
+        print(f'${u:.{dig}{format}L}$')
+
+
 # path config
 """
 import matplotlib.pyplot as plt
