@@ -125,6 +125,18 @@ def array_to_latex(*array, dig=4, format='f', style='L'):
         print(f'${u:.{dig}{format}{style}}$')
 
 
+# nacteni z df do jednotlivych arrays
+def df_to_arrays(df, sloupce, od=0, do=None, dtype=float):
+    if isinstance(sloupce, str):
+        sloupce = [sloupce]
+
+    chybejici = [s for s in sloupce if s not in df.columns]
+    if chybejici:
+        raise KeyError(f"Chybejici sloupce: {chybejici}")
+
+    return [df[s].iloc[od:do].dropna().to_numpy(dtype=dtype) for s in sloupce]
+
+
 # path config
 """
 import matplotlib.pyplot as plt
