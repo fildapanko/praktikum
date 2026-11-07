@@ -119,6 +119,11 @@ def tuple_unc_A(*velicina):
     return tuple(uf(np.mean(v), unc_A(v)) for v in list_velicin)
 
 
+# ufloat z aritmetickeho prumeru
+def ufloat_unc_A(array):
+    return uf(np.mean(array), unc_A(array))
+
+
 # array do latex
 def array_to_latex(*array, dig=4, format='f', style='L'):
     for u in array:
