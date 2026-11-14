@@ -125,9 +125,13 @@ def ufloat_unc_A(array):
 
 
 # array do latex
-def array_to_latex(*array, dig=4, format='f', style='L'):
-    for u in array:
-        print(f'${u:.{dig}{format}{style}}$')
+def array_to_latex(*array, dig=1, format='u', style='L', only_return=False):
+    output = [f'${u:.{dig}{format}{style}}$' for u in array]
+    if only_return:
+        return output
+    else:
+        for s in output:
+            print(s)
 
 
 # nacteni z df do jednotlivych arrays
