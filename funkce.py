@@ -6,7 +6,7 @@ from uncertainties import ufloat as uf
 from scipy.optimize import curve_fit
 from scipy import stats
 from uncertainties import unumpy as unp
-
+from uncertainties import correlated_values
 
 # nacteni google tabulek
 sheet_id = "SPREADSHEET_ID"
@@ -144,6 +144,32 @@ def df_to_arrays(df, sloupce, od=0, do=None, dtype=float):
         raise KeyError(f"Chybejici sloupce: {chybejici}")
 
     return [df[s].iloc[od:do].dropna().to_numpy(dtype=dtype) for s in sloupce]
+
+
+# prepocet z popt a pcov na ufloaty
+def popt_pcov_to_ufloat(popt, pcov, correlated=False):
+    """
+    Převede výsledek curve_fit (popt, pcov) na ufloaty.
+
+    Parametry
+    ---------
+    popt : array_like   optimální parametry z curve_fit
+    pcov : array_like   kovarianční matice z curve_fit
+    correlated : bool   True  -> ufloaty nesou korelace mezi parametry
+                        False -> nezávislé ufloaty (jen sqrt diagonály pcov)
+
+    Vrací
+    -----
+    tuple[ufloat, ...]  parametry s nejistotami
+    """
+    popt = np.asarray(popt, dtype=float)
+    pcov = np.asarray(pcov, dtype=float)
+
+    if correlated:
+        return tuple(correlated_values(popt, pcov))
+
+    perr = np.sqrt(np.diag(pcov))
+    return tuple(uf(v, e) for v, e in zip(popt, perr))
 
 
 # path config
