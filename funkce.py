@@ -8,6 +8,17 @@ from scipy import stats
 from uncertainties import unumpy as unp
 from uncertainties import correlated_values
 
+
+"""
+from pathlib import Path
+# path config
+downloads_dir = Path.home() / 'Downloads'
+# ujistime se, ze slozka existuje (kdyby nahodou ne)
+downloads_dir.mkdir(parents=True, exist_ok=True)
+# output_path = downloads_dir / 'muj_graf.png'
+"""
+
+
 # nacteni google tabulek
 sheet_id = "SPREADSHEET_ID"
 gid = "0"
