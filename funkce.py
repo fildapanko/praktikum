@@ -125,7 +125,7 @@ def df_to_numpy(df, sloupce, dtype=float):
 
 
 # ufloat pro tuple
-def tuple_unc_A(*velicina):
+def tuple_ufloat_unc_A(*velicina):
     list_velicin = [*velicina]
     return tuple(uf(np.mean(v), unc_A(v)) for v in list_velicin)
 
