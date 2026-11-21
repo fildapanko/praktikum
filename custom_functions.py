@@ -11,7 +11,7 @@ from uncertainties import correlated_values     # popt, pcov, correlations
 
 # downloads path
 '''
-from pathlib import Path
+from pathlib import Path                        # paths in operating system
 # path config
 downloads_dir = Path.home() / 'Downloads'
 # make sure the folder exists (just in case)
