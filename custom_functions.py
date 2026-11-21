@@ -3,10 +3,11 @@ import pandas as pd                             # tables, dataframes
 import numpy as np                              # arrays, numerical computations
 import matplotlib.pyplot as plt                 # plots
 from uncertainties import ufloat as uf          # uncertainty propagation
-from scipy.optimize import curve_fit            # fitting
-from scipy import stats                         # Student's coefficient, ...
 from uncertainties import unumpy as unp         # numpy + ufloat
 from uncertainties import correlated_values     # popt, pcov, correlations
+from uncertainties import umath                 # math functions for ufloat
+from scipy.optimize import curve_fit            # fitting
+from scipy import stats                         # Student's coefficient, ...
 
 
 # downloads path
