@@ -17,7 +17,7 @@ from pathlib import Path                        # paths in operating system
 downloads_dir = Path.home() / 'Downloads'
 # make sure the folder exists (just in case)
 downloads_dir.mkdir(parents=True, exist_ok=True)
-# output_path = downloads_dir / 'my_plot.png'
+# output_path = downloads_dir / 'my_plot.pdf'
 '''
 
 
@@ -263,7 +263,7 @@ fig, ax = plt.subplots()
 ax.plot([1, 2, 3], [4, 5, 6])
 
 # Saving - Path is automatically converted to a string with the correct slashes
-output_path = downloads_dir / 'my_plot.png'
+output_path = downloads_dir / 'my_plot.pdf'
 fig.savefig(output_path, dpi=300, bbox_inches='tight')
 
 print(f'Plot saved to: {output_path}')
