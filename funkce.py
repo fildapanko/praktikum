@@ -1,40 +1,42 @@
 # import knihoven
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from uncertainties import ufloat as uf
-from scipy.optimize import curve_fit
-from scipy import stats
-from uncertainties import unumpy as unp
-from uncertainties import correlated_values
+import pandas as pd                             # tabulky, dataframe
+import numpy as np                              # array, numericke vypocty
+import matplotlib.pyplot as plt                 # grafy
+from uncertainties import ufloat as uf          # propagace nejistot
+from scipy.optimize import curve_fit            # fitovani
+from scipy import stats                         # studentuv koeficient, ...
+from uncertainties import unumpy as unp         # numpy + ufloat
+from uncertainties import correlated_values     # popt, pcov, korelace
 
 
-"""
+# downloads path
+'''
 from pathlib import Path
 # path config
 downloads_dir = Path.home() / 'Downloads'
 # ujistime se, ze slozka existuje (kdyby nahodou ne)
 downloads_dir.mkdir(parents=True, exist_ok=True)
 # output_path = downloads_dir / 'muj_graf.png'
-"""
+'''
 
 
 # nacteni google tabulek
-sheet_id = "SPREADSHEET_ID"
-gid = "0"
-url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+sheet_id = 'SPREADSHEET_ID'
+gid = '0'
+url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
 #df = pd.read_csv(url)
 
 
 # nejistota typu A 
 def unc_A(data):
-    """
-    Výpočet nejistoty typu A
+    '''
+    Nejistoty typu A
+
     data : list nebo numpy array
-         měření
+        mereni
     return : float
         nejistota typu A
-    """
+    '''
     data = np.array(data)
     n = len(data)
 
@@ -46,8 +48,8 @@ def unc_A(data):
 
 # nejistoty typu B pro digitalni pristroje
 def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi byt ve spravnych jednotkach; funguje pouze pro jedny podminky zaroven
-    """
-    Vypocet nejistoty typu B pro digitalni mereni (ponechame krajni)
+    '''
+    Nejistoty typu B pro digitalni mereni (ponechame krajni)
 
     reading : float nebo array
         namerena hodnota
@@ -57,7 +59,8 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
         pocet digitu
     resolution : float
         nejmensi dilek
-    """
+    return : nejistota typu B
+    '''
     max_error = abs(reading) * (percent_reading/100) + digits * resolution  # max_error -- krajni nejistota
     u_B = max_error
 
@@ -65,60 +68,71 @@ def unc_B_digital(reading, percent_reading, digits, resolution):    # vse musi b
 
 
 # nejistota typu B u cteni z nejmensiho dilku
-def unc_B_cteni(a):
-    """
+def unc_B_cteni(data):
+    '''
     Nejistota typu B pro napr pravitko
+
     data : float
         nejmensi dilek
     return : float
         nejistota typu B
-    """
-    u_B = a/(3**0.5)
+    '''
+    u_B = data/(3**0.5)
+
     return u_B
 
 
 # funkce na Studentuv koeficient
 def StudCoef(confidence, dof): 
-    """
-    Parametry
+    '''
+    Vypocet odpovidajiciho Studentova koeficientu
+
     confidence : float
         hladina spolehlivosti, typicke hodnoty 0.683, 0.9973;
-    dof : 
+    dof : int
         pocet stupnu volnosti, pro jednoduchou statistiku array.size-1
-    Returns : float
-    Studentuv koeficient pro danou hladinu spolehlivosti a pocet stupnu volnosti
-    """
+    return : float
+        Studentuv koeficient pro danou hladinu spolehlivosti a pocet stupnu volnosti
+    '''
     alpha = 1 - confidence
+
     return stats.t.ppf(1 - alpha/2, dof)
 
 
 # funkce na vazeny prumer
-def weight_average(hodnota): # hodnota : uarray
+def weight_average(hodnota):
+    '''
+    hodnota : uarray
+        pole s vysledky a jejich nejistotami
+    return : ufloat
+        vazeny prumer
+    '''
     values = unp.nominal_values(hodnota)
     errors = unp.std_devs(hodnota)
     weights = 1 / errors**2
     mean = np.sum(weights * values) / np.sum(weights)
     unc = np.sqrt(1 / np.sum(weights))
     unc = unc * StudCoef(0.9973, 9)
+
     return uf(mean, unc)
 
 
-# nacteni z tabulky
-def nacteni_array(df, *list_data, dtype=float):
-    return tuple(df[v].dropna().to_numpy(dtype=dtype) for v in list_data)
-
-
 # nacteni z df do numpy
-def df_to_numpy(df, sloupce, dtype=float):
-    """
-    sloupce: jmeno sloupce (str) nebo seznam jmen (list[str])
-    """
+def df_to_numpy_matrix(df, sloupce, dtype=float):
+    '''
+    df : dataframe
+        df ktery prevadime na numpy objekt
+    sloupce : list
+        jmeno sloupce (str) nebo seznam jmen (list[str])
+    return : numpy.matrix
+        matice puvodni df tabulky
+    '''
     if isinstance(sloupce, str):
         sloupce = [sloupce]
 
     chybejici = [s for s in sloupce if s not in df.columns]
     if chybejici:
-        raise KeyError(f"Chybejici sloupce: {chybejici}")
+        raise KeyError(f'Chybejici sloupce: {chybejici}')
 
     data = df[sloupce].to_numpy(dtype=dtype)
     return data[:, 0] if len(sloupce) == 1 else data
@@ -152,14 +166,14 @@ def df_to_arrays(df, sloupce, od=0, do=None, dtype=float):
 
     chybejici = [s for s in sloupce if s not in df.columns]
     if chybejici:
-        raise KeyError(f"Chybejici sloupce: {chybejici}")
+        raise KeyError(f'Chybejici sloupce: {chybejici}')
 
     return [df[s].iloc[od:do].dropna().to_numpy(dtype=dtype) for s in sloupce]
 
 
 # prepocet z popt a pcov na ufloaty
 def popt_pcov_to_ufloat(popt, pcov, correlated=False):
-    """
+    '''
     Převede výsledek curve_fit (popt, pcov) na ufloaty.
 
     Parametry
@@ -172,7 +186,7 @@ def popt_pcov_to_ufloat(popt, pcov, correlated=False):
     Vrací
     -----
     tuple[ufloat, ...]  parametry s nejistotami
-    """
+    '''
     popt = np.asarray(popt, dtype=float)
     pcov = np.asarray(pcov, dtype=float)
 
@@ -184,12 +198,12 @@ def popt_pcov_to_ufloat(popt, pcov, correlated=False):
 
 
 # path config
-"""
+'''
 import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Cesta do Downloads funguje stejně na Windows i Linuxu
-downloads_dir = Path.home() / "Downloads"
+downloads_dir = Path.home() / 'Downloads'
 
 # Ujistíme se, že složka existuje (kdyby náhodou ne)
 downloads_dir.mkdir(parents=True, exist_ok=True)
@@ -199,8 +213,8 @@ fig, ax = plt.subplots()
 ax.plot([1, 2, 3], [4, 5, 6])
 
 # Uložení - Path se automaticky převede na string se správnými lomítky
-output_path = downloads_dir / "muj_graf.png"
-fig.savefig(output_path, dpi=300, bbox_inches="tight")
+output_path = downloads_dir / 'muj_graf.png'
+fig.savefig(output_path, dpi=300, bbox_inches='tight')
 
-print(f"Graf uložen do: {output_path}")
-"""
+print(f'Graf uložen do: {output_path}')
+'''
