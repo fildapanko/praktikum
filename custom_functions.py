@@ -150,6 +150,19 @@ def df_to_numpy_matrix(df, column, dtype=float):
     return data[:, 0] if len(column) == 1 else data
 
 
+# ufloat from the arithmetic mean
+def ufloat_unc_A(data):
+    '''
+    Converts a dataset to a ufloat (arithmetic mean +- type A uncertainty)
+
+    data : list or numpy array
+        dataset of measurements
+    return : ufloat
+    '''
+
+    return uf(np.mean(data), unc_A(data))
+
+
 # ufloat for several datasets
 def tuple_ufloat_unc_A(*data):
     '''
@@ -165,7 +178,7 @@ def tuple_ufloat_unc_A(*data):
     return tuple(uf(np.mean(v), unc_A(v)) for v in data_list)
 
 
-# array to LaTeX
+# uarray to LaTeX
 def uarray_to_latex(*array, digit=1, format='u', style='L', only_return=False):
     '''
     Formats ufloats as LaTeX strings (e.g. $1.23 \\pm 0.04$)
