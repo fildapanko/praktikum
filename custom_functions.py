@@ -235,6 +235,7 @@ def df_to_arrays(df, column, first_row=0, last_row=None, dtype=float):
 
 
 # conversion from popt and pcov to ufloats
+from uncertainties import correlated_values     # popt, pcov, correlations
 def popt_pcov_to_ufloat(popt, pcov, correlated=False):
     '''
     Converts the result of curve_fit (popt, pcov) to ufloats.
